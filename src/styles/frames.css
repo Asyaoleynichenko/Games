@@ -1,0 +1,1488 @@
+/*
+  Frame-accurate layer for the ten handed-over Figma frames.
+
+  The device shell is 393x852 — exactly the size of the source frames — so
+  every number in this file is the value read straight from the node data
+  rather than a re-interpretation. Each frame renders as an absolutely
+  positioned canvas in its own coordinate space.
+*/
+
+.frame-presence {
+  position: absolute;
+  inset: 0;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--white);
+  container-type: size;
+  container-name: frame;
+}
+
+/* Isolated so plus-lighter rays only tint the theme fill, not the fruits. */
+.frame__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+.frame__bg-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.prismatic-burst-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rays-spin {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 28%;
+}
+
+/* ---------- Game intro (pink doorway) ---------- */
+
+.game-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  border: none;
+  padding: 0;
+  background: var(--magenta);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.game-intro__glow {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  width: 420px;
+  height: 420px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 180, 210, 0.2) 42%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.game-intro__food {
+  position: absolute;
+  left: 50%;
+  top: 88px;
+  width: 320px;
+  height: 320px;
+  translate: -50% 0;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 28px rgba(31, 31, 31, 0.28));
+  pointer-events: none;
+}
+
+.game-intro__new {
+  position: absolute;
+  left: 50%;
+  top: 400px;
+  translate: -50% 0;
+  padding: 6px 18px;
+  border-radius: 99px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: 0 8px 20px rgba(31, 31, 31, 0.18);
+}
+
+/* ---------- Horizontal game pager ---------- */
+
+.pager {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pager::-webkit-scrollbar {
+  display: none;
+}
+
+.pager--hub {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(430 * 100cqh / 852);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.pager--play {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(100% - var(--nav-h));
+  z-index: 1;
+}
+
+.pager__page {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Horizontal fruit strip. Snap scroller is empty; fruits peek on a track. */
+.cast {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(430 * 100cqh / 852);
+  z-index: 2;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cast:active {
+  cursor: grabbing;
+}
+
+.cast__scroll {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: none;
+  scroll-padding-inline: calc(76 * 100cqw / 393);
+  padding-inline: calc(76 * 100cqw / 393);
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
+.cast__scroll.is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+
+.cast__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cast__snap {
+  flex: 0 0 calc(241 * 100cqw / 393);
+  width: calc(241 * 100cqw / 393);
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: grab;
+}
+
+.cast__snap:active {
+  cursor: grabbing;
+}
+
+.cast__fruit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 421px;
+  height: 421px;
+  transform-origin: 0 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.pager-dots {
+  position: absolute;
+  left: 50%;
+  top: calc(320 * 100cqh / 852);
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+  translate: -50% 0;
+}
+
+.pager-dots__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 1px 4px rgba(31, 31, 31, 0.2);
+  transition:
+    width 0.25s var(--ease-out),
+    background 0.25s var(--ease-out);
+}
+
+.pager-dots__dot.is-on {
+  width: 16px;
+  background: #fff;
+}
+
+.frame__scroll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: var(--nav-h);
+  z-index: 4;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  pointer-events: none;
+}
+
+.frame__scroll .menu,
+.frame__scroll .awards-sheet {
+  pointer-events: auto;
+}
+
+/*
+  Hub curtain — the whole panel slides. Overflow stays locked until it is
+  fully raised, so the sheet moves like a slider instead of scrolling inside.
+*/
+.frame__scroll--sheet {
+  top: calc(482 * 100cqh / 852);
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  pointer-events: auto;
+  /* pan-x so card rows can scroll; JS takes vertical sheet drags. */
+  touch-action: pan-x;
+}
+
+.hub-curtain__grip {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  width: 40px;
+  height: 4px;
+  margin: 8px auto -12px;
+  border-radius: var(--r-pill);
+  background: var(--card);
+  pointer-events: none;
+}
+
+.hub-curtain__pull {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 6;
+  pointer-events: none;
+  touch-action: none;
+}
+
+.hub-curtain__pull.is-on {
+  pointer-events: auto;
+}
+
+.hub-curtain__pull.is-on::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  width: 40px;
+  height: 4px;
+  translate: -50% 0;
+  border-radius: var(--r-pill);
+  background: rgba(31, 31, 31, 0.22);
+}
+
+.frame__scroll--sheet.is-open {
+  overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-x pan-y;
+}
+
+.frame__scroll--sheet.is-lowered .hub-curtain__grip {
+  visibility: hidden;
+}
+
+.frame__scroll--sheet .menu__xprow,
+.frame__scroll--sheet .promorow {
+  touch-action: pan-x;
+}
+
+.frame__scroll--flush {
+  border-radius: 0;
+}
+
+/*
+  Figma 18:4087 / 18:4346 — white 15% + background blur 100.
+  Glass lives on the scroll overlay so backdrop-filter samples the hub,
+  not an empty stacking context inside overflow.
+*/
+.frame__scroll--awards {
+  top: calc(296 * 100cqh / 852);
+}
+
+.frame__scroll--glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(100px) saturate(1.2);
+  -webkit-backdrop-filter: blur(100px) saturate(1.2);
+  border-radius: 20px 20px 0 0;
+}
+
+.frame__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Positioning context for the frame's own coordinates. */
+.frame__canvas {
+  position: relative;
+  width: 100%;
+}
+
+/* ---------- Backgrounds ---------- */
+
+/*
+  Three coded bursts — egg sunshine from above, toast manga lines,
+  lemon amber lines. Never the Figma PNGs.
+*/
+.burst {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.burst--purple {
+  left: 50%;
+  top: 0;
+  width: 980px;
+  height: 980px;
+  translate: -50% -14%;
+  mix-blend-mode: screen;
+  mix-blend-mode: plus-lighter;
+}
+
+.burst--magenta {
+  left: 50%;
+  top: 18%;
+  width: 640px;
+  height: 1008px;
+  translate: -50% -38%;
+  mix-blend-mode: screen;
+  mix-blend-mode: plus-lighter;
+}
+
+.burst--orange {
+  left: 50%;
+  top: 28%;
+  width: 220%;
+  height: auto;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  mix-blend-mode: screen;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+
+/*
+  Lemon Ben-Day: two print plates, variable dot size over --orange.
+  Stays outside .rays-spin so the dots don't rotate with the burst.
+*/
+.halftone {
+  position: absolute;
+  inset: -48px;
+  width: calc(100% + 96px);
+  height: calc(100% + 96px);
+  display: block;
+  pointer-events: none;
+}
+
+/* ---------- Characters ---------- */
+
+.cast__item {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+}
+
+.cast__item.is-focus {
+  z-index: 4;
+}
+
+.hero img,
+.side img {
+  isolation: isolate;
+}
+
+/* Neighbours sit above the hero so its glow never washes their artwork. */
+.side {
+  position: absolute;
+  width: 282px;
+  height: 282px;
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  z-index: 3;
+  filter: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.side img {
+  display: block;
+  width: 282px;
+  height: 282px;
+  object-fit: contain;
+  filter: none;
+  pointer-events: none;
+}
+
+/*
+  Figma Tab 10:9 — white 15% + BACKGROUND_BLUR 100, 1px inside stroke
+  white → 14% along ~165deg. A solid white outline is wrong.
+
+  CSS blur(100px) on a 38px chip just averages the theme to peach. Figma's
+  100-radius frost still shows the background; ~24px + saturate matches it.
+*/
+.glass {
+  position: relative;
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(1.45);
+  -webkit-backdrop-filter: blur(24px) saturate(1.45);
+}
+
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.14) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.hpill {
+  position: absolute;
+  top: 16px;
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  border-radius: var(--r-pill);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.hpill__icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hpill--rewards {
+  left: 16px;
+}
+
+.hpill--bell {
+  left: auto;
+  right: 16px;
+}
+
+.hpill:active .hpill__icon {
+  transform: scale(0.92);
+}
+
+.media--live {
+  background: #1a1028;
+}
+
+/* ---------- XP block: 267x122 at 63,341 ---------- */
+
+.xpinfo {
+  --u: calc(100cqw / 393);
+  position: absolute;
+  left: calc(63 * var(--u));
+  top: calc(341 * 100cqh / 852);
+  width: calc(267 * var(--u));
+  height: calc(122 * var(--u));
+  translate: none;
+  transform: none;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Figma 25:5708 — Inter 500 24, ink fill, white 6px OUTSIDE stroke. */
+.xpinfo__level {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(28 * var(--u));
+  margin: 0;
+  padding: 0;
+  font-size: calc(24 * var(--u));
+  font-weight: 500;
+  line-height: calc(28 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-radius: 0;
+  white-space: nowrap;
+  overflow: visible;
+  filter: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.xpinfo__level-stroke,
+.xpinfo__level-fill {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  overflow: visible;
+}
+
+.xpinfo__level-stroke {
+  color: #fff;
+  /* CSS stroke is centered; 12px → 6px visible outside under the fill layer. */
+  -webkit-text-stroke: calc(12 * var(--u)) #fff;
+  paint-order: stroke fill;
+  z-index: 0;
+}
+
+.xpinfo__level-fill {
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+  z-index: 1;
+}
+
+/* Figma 18:3824 Tab — 267×38.3 at y=46. Glass/stroke stop under the +100 star
+   so the rounded white cap does not cut through the badge. */
+.xpinfo__pill {
+  --tuck: calc(24 * var(--u));
+  position: absolute;
+  left: 0;
+  top: calc(46 * var(--u));
+  width: 100%;
+  height: calc(38.31 * var(--u));
+  border-radius: 72px;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border: none;
+  filter: none;
+  translate: none;
+  transform: none;
+  overflow: visible;
+}
+
+.xpinfo__pill::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: var(--tuck);
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(146px) saturate(1.2);
+  -webkit-backdrop-filter: blur(146px) saturate(1.2);
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.xpinfo__pill::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: var(--tuck);
+  border-radius: inherit;
+  padding: calc(1.46 * var(--u));
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.14) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Figma 18:3827 — 235×12 at 13,13 of the tab, fill #f3f3f5. */
+.xpinfo__track {
+  position: absolute;
+  left: calc(13 * var(--u));
+  top: calc(13 * var(--u));
+  width: calc(235 * var(--u));
+  height: calc(12 * var(--u));
+  border-radius: var(--r-progress);
+  background: var(--track);
+  overflow: visible;
+  z-index: 1;
+}
+
+/* Figma 18:3829 cloud — full track, #a7a7a7, white 2.92 outside stroke. */
+.xpinfo__rest {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-progress);
+  background: var(--track-rest);
+  box-shadow: 0 0 0 calc(2.92 * var(--u)) var(--white);
+}
+
+/* Figma 18:3828 mail — 126×12 green, white 2.92 outside stroke, on top of rest. */
+.xpinfo__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: var(--r-progress);
+  background: var(--green);
+  box-shadow: 0 0 0 calc(2.92 * var(--u)) var(--white);
+  z-index: 1;
+}
+
+/* Stars: Tab coords left 0 / 124, top 2 (container 48). Hard 1.25px offset. */
+.xpinfo__star {
+  position: absolute;
+  top: calc(2 * var(--u));
+  width: calc(37.28 * var(--u));
+  height: calc(34.45 * var(--u));
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(calc(1.25 * var(--u)) calc(1.25 * var(--u)) 0 #000);
+}
+
+.xpinfo__star--start {
+  left: 0;
+}
+
+.xpinfo__star-head {
+  position: absolute;
+  top: 0;
+  width: calc(37.28 * var(--u));
+  height: calc(36.45 * var(--u));
+  z-index: 2;
+  pointer-events: none;
+}
+
+.xpinfo__star-head .xpinfo__star {
+  left: 0;
+}
+
+/* Figma 18:3830 — 65×60 at 212,35 of the container → 212, −11 of the tab. */
+.xpinfo__badge {
+  position: absolute;
+  left: calc(212 * var(--u));
+  top: calc(-11 * var(--u));
+  width: calc(65 * var(--u));
+  height: calc(60 * var(--u));
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Figma 18:3833 — 244×20 at 11.5,102, Inter 500 17, letter-spacing −1, LEFT. */
+.xpinfo__note {
+  position: absolute;
+  left: calc(11.5 * var(--u));
+  top: calc(102 * var(--u));
+  width: calc(100% - 23 * var(--u));
+  margin: 0;
+  font-size: calc(17 * var(--u));
+  font-weight: 500;
+  line-height: calc(20 * var(--u));
+  letter-spacing: calc(-1 * var(--u));
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* ---------- Green Button: 171×54, r49, inner white glow. Same as .cta ---------- */
+
+.playbtn,
+.cta,
+.featured__stick {
+  height: 54px;
+  padding: 17px 60px;
+  border-radius: var(--r-pill);
+  background: var(--green);
+  border: none;
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--cta-inset);
+}
+
+.playbtn {
+  position: absolute;
+  left: 50%;
+  top: calc(479 * 100cqh / 852);
+  width: min(171px, 48%);
+  padding: 17px 0;
+  translate: -50% 0;
+  z-index: 3;
+}
+
+.playbtn--dock {
+  opacity: 0;
+  pointer-events: none;
+  translate: -50% 10px;
+  transition:
+    opacity 0.22s var(--ease-out),
+    translate 0.22s var(--ease-out);
+}
+
+.playbtn--dock.is-on {
+  opacity: 1;
+  pointer-events: auto;
+  translate: -50% 0;
+}
+
+/* ---------- The 361x215 media block under the button ---------- */
+
+.media {
+  position: absolute;
+  left: 16px;
+  top: calc(549 * 100cqh / 852);
+  width: calc(100% - 32px);
+  height: clamp(160px, calc(215 * 100cqh / 852), 240px);
+  border-radius: var(--r-card);
+  background: var(--white);
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  display: block;
+  z-index: 3;
+}
+
+.media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Bottom navigation: image at 0,780 ---------- */
+
+.navbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 0;
+  width: 100%;
+  height: var(--nav-h);
+  z-index: 8;
+  background: var(--white);
+}
+
+.navbar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Hit areas over the exported nav artwork. */
+.navbar__tab {
+  position: absolute;
+  top: 0;
+  width: 25%;
+  height: 60px;
+}
+
+.navbar__tab--home {
+  left: 0;
+}
+
+.navbar__tab--profile {
+  left: 75%;
+}
+
+/* ---------- Profile sheet (Menu 25:4917, 393×1020) ---------- */
+
+.menu {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 16px;
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  z-index: 4;
+}
+
+.menu--flush {
+  border-radius: 0;
+}
+
+.menu__gain,
+.menu__tabsblock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: -2px;
+  color: var(--ink);
+}
+
+.menu__xprow {
+  display: flex;
+  gap: 12px;
+  height: 104px;
+  margin: 0 -16px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu__xprow::-webkit-scrollbar {
+  display: none;
+}
+
+.xpcard {
+  flex: 0 0 144px;
+  height: 104px;
+  border-radius: var(--r-card-sm);
+  background: var(--card);
+  padding: 12px;
+  position: relative;
+  text-align: left;
+  overflow: visible;
+}
+
+.xpcard:active,
+.menu__shot:active,
+.menu__mini:active,
+.menu__parcels:active,
+.menu__tile:active,
+.menu__link:active,
+.featured__stick:active,
+.playbtn:active {
+  transform: scale(0.97);
+}
+
+.xpcard__amount {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 120px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: -2px;
+  color: var(--ink);
+}
+
+.xpcard__label {
+  position: absolute;
+  left: 12px;
+  top: 60px;
+  width: 120px;
+  height: 32px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+
+.svctabs {
+  display: flex;
+  gap: 8px;
+  height: auto;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.svctabs::-webkit-scrollbar {
+  display: none;
+}
+
+.svctabs__item {
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -1px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.svctabs__item--active {
+  color: var(--ink);
+}
+
+.promorow {
+  height: 85px;
+  margin: 0 -16px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.promorow::-webkit-scrollbar {
+  display: none;
+}
+
+.promorow img {
+  display: block;
+  width: 469px;
+  height: 85px;
+  border-radius: var(--r-card-sm);
+}
+
+.menu__profile {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  height: 44px;
+}
+
+.menu__ava {
+  width: 44px;
+  height: 44px;
+  border-radius: 99px;
+  object-fit: cover;
+  background: var(--card);
+}
+
+.menu__who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu__name,
+.menu__phone {
+  margin: 0;
+}
+
+.menu__name {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+
+.menu__phone {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+
+.menu__more {
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  background: var(--card);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.menu__features {
+  display: flex;
+  gap: 12px;
+  height: 141px;
+}
+
+.menu__shot,
+.menu__parcels {
+  padding: 0;
+  border: none;
+  background: none;
+  overflow: hidden;
+}
+
+.menu__shot {
+  width: 174px;
+  height: 141px;
+  border-radius: 16px;
+}
+
+.menu__shot img,
+.menu__parcels img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu__stack {
+  width: 175px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu__mini,
+.menu__parcels {
+  width: 174px;
+  height: 65px;
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.menu__mini {
+  padding: 37px 12px 12px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+
+.menu__tiles {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.menu__tile {
+  width: 81px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.menu__tile img {
+  display: block;
+  width: 81px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: cover;
+  background: var(--card);
+}
+
+.menu__tile span {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+
+.menu__links {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu__link {
+  height: 40px;
+  padding: 12px 0;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+
+.menu__link--out {
+  height: 28px;
+  padding: 12px 0 0;
+}
+
+/* ---------- Награды ---------- */
+
+.awards-sheet {
+  position: relative;
+  left: auto;
+  right: auto;
+  padding: 20px 16px 80px;
+  border-radius: 20px 20px 0 0;
+  background: transparent;
+  z-index: 2;
+}
+
+.awards__title {
+  position: static;
+  left: auto;
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 26px;
+  color: var(--ink);
+}
+
+.awards-sheet:has(.featured) .awards__title {
+  margin-bottom: 12px;
+}
+
+.awards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.awards-featured {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+/* Reward card: colour and ray motion come from the sticker theme. */
+.featured {
+  position: relative;
+  left: auto;
+  width: 100%;
+  height: 296px;
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.featured__burst {
+  position: absolute;
+  left: 50%;
+  top: 96px;
+  width: 420px;
+  height: 420px;
+  translate: -50% -50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.featured__svg {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  pointer-events: none;
+}
+
+.featured__burst--spin {
+  animation: featured-spin 22s linear infinite;
+}
+
+.featured__burst--spin-rev {
+  animation: featured-spin 16s linear infinite reverse;
+}
+
+.featured__burst--shine {
+  animation: featured-shine 3.4s ease-in-out infinite;
+}
+
+.featured__burst--pulse {
+  animation: featured-pulse 2.7s ease-in-out infinite;
+}
+
+.featured__burst--drift {
+  animation: featured-drift 7.5s ease-in-out infinite;
+}
+
+@keyframes featured-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes featured-shine {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+}
+
+@keyframes featured-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes featured-drift {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+}
+
+.featured__art {
+  position: absolute;
+  left: 50%;
+  top: -13px;
+  width: 224px;
+  height: 211px;
+  translate: -50% 0;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.featured__share,
+.featured__lock {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  border-radius: var(--r-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  color: var(--ink);
+}
+
+.featured__name {
+  position: absolute;
+  left: 16px;
+  top: 214px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 26px;
+  color: var(--ink);
+  z-index: 1;
+}
+
+.featured__desc {
+  position: absolute;
+  left: 16px;
+  top: 240px;
+  width: 284px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: pre-line;
+  z-index: 1;
+}
+
+.featured__stick {
+  width: 100%;
+  padding: 17px 0;
+}
+
+.awardcard--rare {
+  overflow: hidden;
+}
+
+.awardcard--rare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.45) 48%,
+    transparent 66%
+  );
+  transform: translateX(-120%);
+  animation: sticker-shine 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sticker-shine {
+  0%,
+  70% {
+    transform: translateX(-120%);
+  }
+  85% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* Award cards: 112x92, three columns, 12px gap. */
+.awardcard {
+  position: relative;
+  width: 100%;
+  height: 92px;
+  border-radius: var(--r-card-sm);
+  background: var(--white);
+  padding: 0;
+  border: none;
+  display: block;
+}
+
+.awardcard__slot {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.awardcard img {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 97px;
+  height: 91px;
+  translate: -50% 0;
+  object-fit: contain;
+}
+
+.awardcard--locked {
+  height: 90px;
+}
+
+.awardcard--locked img {
+  width: 86px;
+  height: 80px;
+  left: 50%;
+  top: 4px;
+  filter: grayscale(1) opacity(0.42);
+}
+
+.awardcard__lock {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  background: rgba(31, 31, 31, 0.72);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.featured--locked .featured__art {
+  filter: grayscale(1) opacity(0.48);
+}
+
+
+@container frame (max-height: 700px) {
+  .hpill {
+    top: 10px;
+  }
+
+  .xpinfo__note {
+    font-size: 15px;
+  }
+}
+
+@container frame (max-width: 360px) {
+  .xpinfo__level {
+    font-size: 20px;
+    letter-spacing: -1px;
+  }
+
+  .playbtn,
+  .cta,
+  .featured__stick {
+    height: 48px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays-spin,
+  .featured__burst,
+  .awardcard--rare::after,
+  .game-intro__glow {
+    animation: none !important;
+  }
+}

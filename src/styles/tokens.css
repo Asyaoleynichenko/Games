@@ -1,0 +1,67 @@
+/*
+  Design tokens taken directly from the Figma file 🛒 (page «экраны»).
+  Values are read from the node data, not eyeballed.
+*/
+
+:root {
+  /* Character theme bases (frame background fills) */
+  --purple: #9747ff;
+  --magenta: #ff47fc;
+  --orange: #ff9d00;
+
+  /* Brand green — progress fill and CTA (node "mail" #20bf7a) */
+  --green: #20bf7a;
+  --green-dark: #12a765;
+  --green-shadow: 0 8px 18px rgba(18, 167, 101, 0.38);
+
+  /* Surfaces */
+  --white: #ffffff;
+  --card: #efefef;
+  --track: #f3f3f5;
+  --track-rest: #a7a7a7;
+
+  /* Star / XP accents */
+  --star: #fdde28;
+
+  /* Typography */
+  --ink: #1f1f1f;
+  --ink-muted: #a7a7a7;
+  --exit-red: #ff0000;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* Radii (from node cornerRadius) */
+  --r-pill: 49px;
+  --r-card: 20px;
+  --r-card-sm: 16px;
+  --r-progress: 146px;
+  --r-sheet: 20px;
+
+  /* Shared Tab glass — white 15%, 1px inside stroke, blur 100. */
+  --glass: rgba(255, 255, 255, 0.15);
+  --glass-blur: 100px;
+
+  /* Shared green Button — inner white glow, no outer rim. */
+  --cta-inset: inset 0 0 20px #fff;
+
+  /* Elevation */
+  --shadow-card: 0 6px 20px rgba(31, 31, 31, 0.1);
+  --shadow-float: 0 16px 40px rgba(31, 31, 31, 0.24);
+  --shadow-pill: 0 4px 14px rgba(31, 31, 31, 0.16);
+
+  /* Device — iPhone 16 frame from Figma */
+  --frame-w: 393px;
+  --frame-h: 852px;
+  --nav-h: 73px;
+  --device-w: var(--frame-w);
+  --device-h: var(--frame-h);
+  --fit: 1;
+  --scale-max: 1.25;
+  --bezel: 44px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
