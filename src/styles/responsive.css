@@ -50,8 +50,8 @@
 
 .device {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: calc(var(--frame-w) * var(--fit));
+  height: calc(var(--frame-h) * var(--fit));
   border-radius: 0;
   overflow: hidden;
   background: #000;
@@ -61,10 +61,12 @@
 
 .device__artboard {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: none;
+  top: 0;
+  left: 0;
+  width: var(--frame-w);
+  height: var(--frame-h);
+  transform: scale(var(--fit));
+  transform-origin: 0 0;
 }
 
 .demo-rail {
@@ -185,8 +187,8 @@
   }
 
   .device {
-    width: 100%;
-    height: 100%;
+    width: calc(var(--frame-w) * var(--fit));
+    height: calc(var(--frame-h) * var(--fit));
     border-radius: 0;
     box-shadow: none;
   }

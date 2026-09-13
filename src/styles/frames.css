@@ -266,6 +266,7 @@
   overflow-x: hidden;
   scrollbar-width: none;
   pointer-events: none;
+  scroll-padding-top: 52px;
 }
 
 .frame__scroll .menu,
@@ -330,6 +331,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   touch-action: pan-x pan-y;
+  scroll-padding-top: 52px;
 }
 
 .frame__scroll--sheet.is-lowered .hub-curtain__grip {
@@ -878,8 +880,7 @@
 /* ---------- Profile sheet (Menu 25:4917, 393×1020) ---------- */
 
 .menu {
-  position: absolute;
-  left: 0;
+  position: relative;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -975,12 +976,31 @@
 }
 
 .svctabs {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   display: flex;
   flex-wrap: nowrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
+  margin: 0 -16px;
+  padding: 8px 16px 12px;
+  background: var(--white);
+}
+
+.menu__anchor,
+.menu__gain {
+  scroll-margin-top: 52px;
+}
+
+.menu__data {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* Last anchor can scroll under the sticky tabs. */
+  min-height: calc(var(--frame-h) - 172px);
 }
 
 .svctabs__item {

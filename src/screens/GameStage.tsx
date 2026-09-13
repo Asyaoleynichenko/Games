@@ -10,7 +10,7 @@ import {
   HubCurtain,
   type HubCurtainHandle,
 } from '../components/frame/HubCurtain'
-import { MENU_HEIGHT, MenuSheet } from '../components/frame/MenuSheet'
+import { MenuSheet, scrollMenuTo } from '../components/frame/MenuSheet'
 import { onThemeFor, useThemePager } from '../components/frame/Pager'
 import { PlayDock } from '../components/frame/PlayDock'
 import { XpInfo } from '../components/frame/XpInfo'
@@ -123,11 +123,16 @@ export function GameStage() {
           stop={hubSheet}
           onTop={onCurtainTop}
         >
-          <div className="frame__canvas" style={{ minHeight: MENU_HEIGHT }}>
+          <div className="frame__canvas">
             <MenuSheet
-              top={0}
               phase={hubPhase}
               onRetry={() => setHubPhase('ready')}
+              onBeforeScroll={() => {
+                if (hubSheet === 'expanded') return false
+                setHubSheet('expanded')
+                curtainRef.current?.snapTo('expanded')
+                return true
+              }}
               onAction={(target) => {
                 if (target === 'quest') goto('quest')
                 else if (target === 'game') {
@@ -186,15 +191,19 @@ export function GameStage() {
           setHubPhase('ready')
           setHubSheet('collapsed')
           curtainRef.current?.snapTo('collapsed')
+          scrollMenuTo('menu-gain')
           goto('hub')
         }}
         onCatalog={() => openSheet('catalog')}
         onClubs={() => goto('awards-grid')}
         onProfile={() => {
-          if (mode === 'hub') {
-            setHubSheet('expanded')
-            curtainRef.current?.snapTo('expanded')
-          } else goto('menu')
+          if (mode !== 'hub') {
+            goto('menu')
+            return
+          }
+          setHubSheet('expanded')
+          curtainRef.current?.snapTo('expanded')
+          scrollMenuTo('menu-data', 320)
         }}
       />
     </div>

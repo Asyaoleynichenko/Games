@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, type MouseEvent } from 'react'
 import { ui } from '../../assets'
 import {
   hubActions,
@@ -11,8 +11,7 @@ import {
 import type { HubPhase } from '../../state/HubState'
 
 /**
- * Menu 25:4917 — 393×1020, auto-layout column, pad 20/16, gap 20.
- * Same block on the hub curtain and as the standalone profile screen.
+ * Menu 25:4917 — one long page. Tabs are in-sheet anchors, not panels.
  */
 export const MENU_HEIGHT = 1020
 
@@ -33,30 +32,107 @@ function MoreDots() {
   )
 }
 
+function menuScroller(target: HTMLElement) {
+  return (
+    (target.closest('.frame__scroll--sheet') as HTMLElement | null) ||
+    (target.closest('.frame__scroll') as HTMLElement | null)
+  )
+}
+
+function offsetInScroller(target: HTMLElement, root: HTMLElement) {
+  let y = 0
+  let node: HTMLElement | null = target
+  while (node && node !== root) {
+    y += node.offsetTop
+    node = node.offsetParent as HTMLElement | null
+  }
+  return y
+}
+
+/** Scroll the hub sheet (not the window) to an in-menu anchor. */
+export function scrollMenuTo(id: string, delay = 0) {
+  const run = () => {
+    const target = document.getElementById(id)
+    if (!target) return
+    const root = menuScroller(target)
+    if (!root) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    const tabs = root.querySelector('.svctabs') as HTMLElement | null
+    const offset = (tabs?.offsetHeight ?? 0) + 4
+    const y = Math.max(0, offsetInScroller(target, root) - offset)
+    root.scrollTo({ top: y, behavior: 'smooth' })
+  }
+  const start = () => requestAnimationFrame(run)
+  if (delay) window.setTimeout(start, delay)
+  else start()
+}
+
 export interface MenuSheetProps {
-  top: number
+  top?: number
   floating?: boolean
   phase?: HubPhase
   onAction: (target: 'quest' | 'game' | 'streak') => void
   onRetry?: () => void
+  /** Raise the curtain before an in-sheet jump, if it is still halfway down. */
+  onBeforeScroll?: () => boolean
 }
 
 export function MenuSheet({
-  top,
   floating = true,
   phase = 'ready',
   onAction,
   onRetry,
+  onBeforeScroll,
 }: MenuSheetProps) {
   const actions = phase === 'long' ? hubActionsLong : hubActions
   const [tab, setTab] = useState<ServiceTabId>('services')
 
+  useEffect(() => {
+    const first = document.getElementById('menu-services')
+    const root = first ? menuScroller(first) : null
+    if (!root) return
+
+    const nodes = serviceTabs
+      .map((item) => document.getElementById(`menu-${item.id}`))
+      .filter((node): node is HTMLElement => Boolean(node))
+
+    const syncTab = () => {
+      const tabs = root.querySelector('.svctabs') as HTMLElement | null
+      const line = (tabs?.getBoundingClientRect().bottom ?? root.getBoundingClientRect().top) + 8
+      let current: ServiceTabId = 'services'
+      for (const node of nodes) {
+        if (node.getBoundingClientRect().top <= line) {
+          current = node.id.replace(/^menu-/, '') as ServiceTabId
+        }
+      }
+      const room = root.scrollHeight - root.clientHeight
+      if (room > 0 && root.scrollTop >= room - 2) {
+        current = 'data'
+      }
+      setTab(current)
+    }
+
+    syncTab()
+    root.addEventListener('scroll', syncTab, { passive: true })
+    return () => root.removeEventListener('scroll', syncTab)
+  }, [])
+
+  const onAnchor = (event: MouseEvent<HTMLAnchorElement>, id: ServiceTabId) => {
+    event.preventDefault()
+    setTab(id)
+    const hash = `#menu-${id}`
+    if (window.location.hash !== hash) {
+      history.replaceState(null, '', hash)
+    }
+    const locked = onBeforeScroll?.() ?? false
+    scrollMenuTo(`menu-${id}`, locked ? 360 : 0)
+  }
+
   return (
-    <div
-      className={`menu${floating ? '' : ' menu--flush'}`}
-      style={{ top, minHeight: MENU_HEIGHT }}
-    >
-      <section className="menu__gain">
+    <div className={`menu${floating ? '' : ' menu--flush'}`}>
+      <section className="menu__gain" id="menu-gain">
         <h2 className="menu__title">Как получить больше</h2>
         {phase === 'empty' ? (
           <div className="menu__empty">
@@ -91,96 +167,84 @@ export function MenuSheet({
         )}
       </section>
 
-      <section className="menu__tabsblock">
-        <div className="svctabs" role="tablist" aria-label="Разделы меню">
-          {serviceTabs.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={tab === item.id}
-              className={`svctabs__item${tab === item.id ? ' svctabs__item--active' : ''}`}
-              onClick={() => setTab(item.id)}
-            >
-              {item.label}
+      <nav className="svctabs" aria-label="Разделы меню">
+        {serviceTabs.map((item) => (
+          <a
+            key={item.id}
+            href={`#menu-${item.id}`}
+            className={`svctabs__item${tab === item.id ? ' svctabs__item--active' : ''}`}
+            onClick={(event) => onAnchor(event, item.id)}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <section className="menu__anchor" id="menu-services">
+        <div className="promorow">
+          <img src={ui.promoRow} alt="Получите 1088 ₽ за прошлые покупки" />
+        </div>
+      </section>
+
+      <section className="menu__anchor svctabs__panel" id="menu-promos">
+        <button className="svctabs__card" type="button">
+          <strong>−20%</strong>
+          <span>На завтрак сегодня</span>
+        </button>
+        <button className="svctabs__card" type="button">
+          <strong>2=1</strong>
+          <span>Молочка из подборки</span>
+        </button>
+      </section>
+
+      <section className="menu__anchor" id="menu-orders">
+        <div className="menu__features">
+          <button className="menu__shot" type="button">
+            <img src={ui.menuPurchases} alt="История покупок" />
+          </button>
+          <div className="menu__stack">
+            <button className="menu__mini" type="button">
+              История заказов
+            </button>
+            <button className="menu__parcels" type="button">
+              <img src={ui.menuParcels} alt="Посылки" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="menu__anchor menu__data" id="menu-data">
+        <div className="menu__profile">
+          <img className="menu__ava" src={ui.menuAvatar} alt="" />
+          <div className="menu__who">
+            <p className="menu__name">Андрей Ивашин</p>
+            <p className="menu__phone">+7 (921) 946-83-79</p>
+          </div>
+          <button className="menu__more" type="button" aria-label="Ещё">
+            <MoreDots />
+          </button>
+        </div>
+
+        <div className="menu__tiles">
+          {menuTiles.map((tile) => (
+            <button key={tile.id} className="menu__tile" type="button">
+              <img src={TILE_ART[tile.art]} alt="" />
+              <span>{tile.label}</span>
             </button>
           ))}
         </div>
-        {tab === 'services' && (
-          <div className="promorow">
-            <img src={ui.promoRow} alt="Получите 1088 ₽ за прошлые покупки" />
-          </div>
-        )}
-        {tab === 'promos' && (
-          <div className="svctabs__panel">
-            <button className="svctabs__card" type="button">
-              <strong>−20%</strong>
-              <span>На завтрак сегодня</span>
+
+        <div className="menu__links">
+          {menuLinks.map((label) => (
+            <button key={label} className="menu__link" type="button">
+              {label}
             </button>
-            <button className="svctabs__card" type="button">
-              <strong>2=1</strong>
-              <span>Молочка из подборки</span>
-            </button>
-          </div>
-        )}
-        {tab === 'orders' && (
-          <div className="svctabs__empty">
-            <p>Пока нет заказов</p>
-            <span>Собери корзину — и заказ появится здесь</span>
-          </div>
-        )}
-        {tab === 'data' && (
-          <div className="svctabs__empty">
-            <p>Андрей Ивашин</p>
-            <span>+7 (921) 946-83-79</span>
-          </div>
-        )}
+          ))}
+          <button className="menu__link menu__link--out" type="button">
+            Выйти из профиля
+          </button>
+        </div>
       </section>
-
-      <div className="menu__profile">
-        <img className="menu__ava" src={ui.menuAvatar} alt="" />
-        <div className="menu__who">
-          <p className="menu__name">Андрей Ивашин</p>
-          <p className="menu__phone">+7 (921) 946-83-79</p>
-        </div>
-        <button className="menu__more" type="button" aria-label="Ещё">
-          <MoreDots />
-        </button>
-      </div>
-
-      <div className="menu__features">
-        <button className="menu__shot" type="button">
-          <img src={ui.menuPurchases} alt="История покупок" />
-        </button>
-        <div className="menu__stack">
-          <button className="menu__mini" type="button">
-            История заказов
-          </button>
-          <button className="menu__parcels" type="button">
-            <img src={ui.menuParcels} alt="Посылки" />
-          </button>
-        </div>
-      </div>
-
-      <div className="menu__tiles">
-        {menuTiles.map((tile) => (
-          <button key={tile.id} className="menu__tile" type="button">
-            <img src={TILE_ART[tile.art]} alt="" />
-            <span>{tile.label}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="menu__links">
-        {menuLinks.map((label) => (
-          <button key={label} className="menu__link" type="button">
-            {label}
-          </button>
-        ))}
-        <button className="menu__link menu__link--out" type="button">
-          Выйти из профиля
-        </button>
-      </div>
     </div>
   )
 }

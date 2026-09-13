@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { FrameNav } from '../components/frame/Chrome'
-import { MENU_HEIGHT, MenuSheet } from '../components/frame/MenuSheet'
+import { MenuSheet } from '../components/frame/MenuSheet'
 import { useHub } from '../state/HubState'
 
 /**
@@ -20,9 +20,8 @@ export function MenuFrame() {
       transition={{ duration: 0.25 }}
     >
       <div className="frame__scroll">
-        <div className="frame__canvas" style={{ minHeight: MENU_HEIGHT }}>
+        <div className="frame__canvas">
           <MenuSheet
-            top={0}
             floating={false}
             onAction={(target) => {
               if (target === 'quest') goto('quest')
