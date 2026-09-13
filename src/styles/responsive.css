@@ -93,7 +93,7 @@
   }
 }
 
-/* ---------- Tablet: centered handset, soft bezel, no review rail ---------- */
+/* ---------- Tablet: centered 393×852 handset, soft bezel, no review rail ---------- */
 
 @media (min-width: 600px) and (max-width: 959.98px) {
   .stage {
@@ -103,11 +103,14 @@
   }
 
   .device-slot {
+    --fit: min(100cqi / var(--frame-w), 100cqb / var(--frame-h));
     padding: 0;
     overflow: visible;
   }
 
   .device {
+    width: calc(var(--frame-w) * var(--fit));
+    height: calc(var(--frame-h) * var(--fit));
     border-radius: 32px;
     box-shadow:
       0 0 0 6px #0b0910,
@@ -193,11 +196,18 @@
   }
 
   .device-slot {
+    --fit: min(100cqi / var(--frame-w), 100cqb / var(--frame-h));
     padding: 0;
+    overflow: visible;
   }
 
   .device {
+    width: calc(var(--frame-w) * var(--fit));
+    height: calc(var(--frame-h) * var(--fit));
     border-radius: 16px;
+    box-shadow:
+      0 0 0 4px #0b0910,
+      0 12px 32px rgba(0, 0, 0, 0.45);
   }
 
   .demo-rail {
@@ -349,4 +359,28 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Extra-loop screens inherit the live frame size */
+.screen-hero img,
+.screen-hero--lg img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 359.98px) {
+  .menu__xprow,
+  .promorow {
+    gap: 8px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 599.98px) {
+  .playdock {
+    gap: 8px;
+  }
+
+  .media {
+    height: clamp(120px, 28cqh, 180px);
+  }
 }

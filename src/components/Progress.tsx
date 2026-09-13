@@ -25,16 +25,7 @@ export function ProgressPill({ progress }: { progress: number }) {
         />
       </div>
 
-      {/* Mid milestone star sits on the track */}
-      <Star
-        size={30}
-        style={{
-          position: 'absolute',
-          left: 128,
-          top: 4,
-          zIndex: 2,
-        }}
-      />
+      <Star size={30} className="progress-pill__star--mid" />
 
       <img
         src={ui.badge100}
@@ -52,9 +43,24 @@ export function ProgressPill({ progress }: { progress: number }) {
   )
 }
 
-function Star({ size, style }: { size: number; style?: React.CSSProperties }) {
+function Star({
+  size,
+  style,
+  className,
+}: {
+  size: number
+  style?: React.CSSProperties
+  className?: string
+}) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" style={style} aria-hidden>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      style={style}
+      className={className}
+      aria-hidden
+    >
       <path
         d="M12 1.8l3.1 6.5 7.1.9-5.2 4.9 1.3 7-6.3-3.4-6.3 3.4 1.3-7L1.8 9.2l7.1-.9L12 1.8Z"
         fill="var(--star)"

@@ -58,6 +58,10 @@ export function DemoRail() {
   const openFrame = (id: FrameId) => {
     const route = frameRoute[id]
     if (route.character !== undefined) setCharacterIndex(route.character)
+    if (route.screen === 'play' || route.screen === 'play-alt') {
+      openTetris('playing')
+      return
+    }
     if (route.screen === 'hub') {
       setHubPhase('ready')
       setHubMenuOpen(true)

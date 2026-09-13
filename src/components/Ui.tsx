@@ -57,7 +57,7 @@ export function FloatingXp({
       style={{
         position: 'absolute',
         left: '50%',
-        top: 340,
+        top: 'calc(340 * 100cqh / 852)',
         translateX: '-50%',
         padding: '8px 16px',
         borderRadius: 'var(--r-pill)',

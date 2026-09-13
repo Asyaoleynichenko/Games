@@ -1,55 +1,63 @@
-/* Mini-game / Tetris — Figma 133:1672 … 148:951 */
+/* Завтрак-тетрис — nested auto-layout, Figma 133:1714 */
 
 .tgame {
   position: absolute;
   inset: 0;
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 16px 16px;
-  color: #fff;
   overflow: hidden;
   isolation: isolate;
+  color: #fff;
+  background: var(--purple);
+  container-type: size;
 }
 
-.tgame__bg,
-.tgame__scrim {
+.tgame .burst,
+.tgame__scrim,
+.tgame__dim,
+.tgame__lines {
   position: absolute;
+}
+
+.tgame .burst {
   inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
   pointer-events: none;
 }
 
-.tgame__bg {
-  background:
-    radial-gradient(120% 80% at 50% -10%, #c084ff 0%, transparent 55%),
-    var(--purple);
-}
-
 .tgame__scrim {
+  inset: 0;
   background: rgba(0, 0, 0, 0.16);
+  pointer-events: none;
 }
 
-.tgame__head,
-.tgame__stats,
-.tgame__play,
-.tgame__hint,
-.tgame__progress,
-.tgame__note,
-.tgame__dim {
+/* Vertical: screen column. Hug chrome, fill the board. */
+.tgame__stack {
   position: relative;
   z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 2cqh, 16px);
+  padding: clamp(12px, 3cqh, 24px) clamp(12px, 4cqw, 16px) clamp(12px, 2cqh, 16px);
 }
 
+/* Horizontal: back + title + pause. Space between. Icons 48×48 fixed. */
 .tgame__head {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  height: 48px;
+  gap: 16px;
+  flex: 0 0 auto;
+  width: 100%;
 }
 
 .tgame__icon {
   width: 48px;
   height: 48px;
+  flex: 0 0 48px;
   border-radius: 24px;
   display: grid;
   place-items: center;
@@ -57,86 +65,173 @@
   background: rgba(255, 255, 255, 0.18);
 }
 
+.tgame__icon img {
+  width: 24px;
+  height: 24px;
+}
+
 .tgame__title {
   margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
   font-size: 20px;
   font-weight: 600;
   line-height: 28px;
 }
 
+/* Horizontal: three metrics, each fills. */
 .tgame__stats {
-  margin-top: 16px;
-  height: 64px;
-  padding: 0 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 12px 16px;
   border-radius: 20px;
   background: #fff;
   color: #151515;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.tgame__stats p {
-  margin: 0 0 4px;
+.tgame__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.tgame__stat p {
+  margin: 0;
+  width: 100%;
+  min-width: 0;
   font-size: 12px;
+  font-weight: 400;
   line-height: 16px;
 }
 
-.tgame__stats strong {
+.tgame__stat strong {
+  width: 100%;
+  min-width: 0;
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
 }
 
+/* Horizontal: board + 12 + side 101. Board hugs, cells stay square. */
 .tgame__play {
-  margin-top: 16px;
   display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
   gap: 12px;
-  min-height: 0;
   flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  container-type: size;
+}
+
+.tgame__board-slot {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 1 auto;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
 }
 
 .tgame__board {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 248px;
+  position: relative;
+  width: min(calc(100cqi - 113px), calc(100cqb * 248 / 440));
+  height: auto;
+  aspect-ratio: 248 / 440;
+  flex: 0 0 auto;
   border-radius: 24px;
   background: rgba(27, 9, 46, 0.94);
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(18, 1fr);
-  gap: 2px;
-  padding: 14px;
+  overflow: hidden;
   touch-action: none;
 }
 
+.tgame__lines,
+.tgame__field {
+  inset: 16px;
+}
+
+.tgame__lines {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc((100% - 9px) / 10),
+      rgba(255, 255, 255, 0.08) calc((100% - 9px) / 10),
+      rgba(255, 255, 255, 0.08) calc((100% - 9px) / 10 + 1px)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc((100% - 17px) / 18),
+      rgba(255, 255, 255, 0.08) calc((100% - 17px) / 18),
+      rgba(255, 255, 255, 0.08) calc((100% - 17px) / 18 + 1px)
+    );
+  pointer-events: none;
+}
+
+.tgame__field {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(18, minmax(0, 1fr));
+  gap: 2px;
+}
+
 .tgame__cell {
+  min-width: 0;
+  min-height: 0;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.06);
+  background: transparent;
 }
 
 .tgame__cell.is-on {
+  background: var(--cell, #ffcc40);
   border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
+/* Vertical: next / goal / combo. Fixed width, fill height. */
 .tgame__side {
-  width: 101px;
-  flex: 0 0 101px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 0 0 101px;
+  align-self: stretch;
+  width: 101px;
+  min-height: 0;
+  max-height: 100%;
 }
 
 .tgame__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 16px 12px 12px;
   border-radius: 20px;
   background: #fff;
   color: #151515;
-  padding: 12px;
 }
 
 .tgame__card p,
-.tgame__card--combo p {
-  margin: 0 0 8px;
+.tgame__card strong {
+  min-width: 0;
+}
+
+.tgame__card p {
+  margin: 0;
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
@@ -149,10 +244,14 @@
 }
 
 .tgame__card--goal {
+  flex: 1 1 auto;
   background: #ffcc40;
 }
 
 .tgame__card--combo {
+  flex: 0 0 auto;
+  gap: 4px;
+  padding-top: 12px;
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
 }
@@ -169,52 +268,68 @@
 }
 
 .tgame__next {
+  width: 77px;
   height: 64px;
+  flex: 0 0 64px;
   border-radius: 12px;
   background: var(--purple);
   display: grid;
-  grid-template-columns: repeat(4, 16px);
-  grid-auto-rows: 16px;
+  grid-template-columns: repeat(4, 20px);
+  grid-auto-rows: 20px;
   place-content: center;
   gap: 2px;
 }
 
 .tgame__next span {
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
+/* Horizontal: space-between hints. */
 .tgame__hint {
-  margin-top: 12px;
-  height: 56px;
-  padding: 0 16px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.18);
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.18);
   font-size: 14px;
   font-weight: 500;
+  line-height: 20px;
 }
 
+/* Vertical: label row + bar. */
 .tgame__progress {
-  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 auto;
+  width: 100%;
   padding: 12px 16px;
   border-radius: 20px;
   background: #fff;
   color: #151515;
 }
 
-.tgame__progress > div:first-child {
+.tgame__progress-row {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  width: 100%;
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
 }
 
 .tgame__bar {
-  margin-top: 8px;
+  width: 100%;
   height: 8px;
+  flex: 0 0 8px;
   border-radius: 4px;
   background: rgba(21, 21, 21, 0.12);
   overflow: hidden;
@@ -228,22 +343,29 @@
 }
 
 .tgame__note {
-  margin: 12px 0 0;
+  margin: 0;
+  flex: 0 0 auto;
+  width: 100%;
   text-align: center;
   font-size: 14px;
+  font-weight: 400;
   line-height: 20px;
 }
 
+/* Overlay is absolute; sheet is a vertical hug/fill column. */
 .tgame__dim {
-  position: absolute;
   inset: 0;
   z-index: 4;
-  background: rgba(0, 0, 0, 0.48);
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.48);
 }
 
 .tgame__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
   padding: 24px 16px calc(24px + var(--safe-b));
   border-radius: 24px 24px 0 0;
@@ -253,36 +375,42 @@
 
 .tgame__sheet--center {
   margin: auto 16px;
+  width: calc(100% - 32px);
   border-radius: 24px;
   text-align: center;
 }
 
 .tgame__sheet h2 {
   margin: 0;
+  width: 100%;
   font-size: 24px;
   font-weight: 600;
   line-height: 32px;
 }
 
 .tgame__sheet > p {
-  margin: 12px 0 0;
+  margin: 0;
+  width: 100%;
   font-size: 16px;
   line-height: 20px;
 }
 
 .tgame__rules {
-  list-style: none;
-  margin: 16px 0 20px;
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  list-style: none;
+  margin: 4px 0 8px;
+  padding: 0;
+  width: 100%;
 }
 
 .tgame__rules li {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 12px;
+  width: 100%;
   font-size: 15px;
   font-weight: 500;
   letter-spacing: -1px;
@@ -291,14 +419,16 @@
 .tgame__rules i {
   width: 20px;
   height: 20px;
-  border-radius: 5px;
   flex: 0 0 20px;
+  border-radius: 5px;
 }
 
 .tgame__rewards {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 8px;
-  margin: 16px 0 8px;
+  width: 100%;
 }
 
 .tgame__rewards span {
@@ -310,22 +440,73 @@
 }
 
 .tgame__sheet .cta {
-  margin-top: 12px;
+  width: 100%;
+}
+
+@container (max-height: 640px) {
+  .tgame__icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .tgame__title {
+    font-size: 17px;
+    line-height: 22px;
+  }
+
+  .tgame__stats {
+    padding: 8px 12px;
+  }
+}
+
+@container (max-width: 340px) {
+  .tgame__icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .tgame__title {
+    font-size: 16px;
+  }
+}
+
+/* Hub preview of the same game — 361×215 */
+.media--tetris {
+  display: flex;
+  flex-direction: column;
+  background: rgba(27, 9, 46, 0.94);
+  padding: 10px 12px;
+}
+
+.media--tetris .tgame__field {
+  position: relative;
+  inset: auto;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+}
+
+.media--tetris .tgame__cell.is-on {
+  border-radius: 4px;
 }
 
 .status-toast {
   position: absolute;
   left: 50%;
-  top: 296px;
-  translate: -50% 0;
+  top: 36%;
+  translate: -50% -50%;
   z-index: 8;
   min-width: 220px;
-  padding: 14px 20px;
+  padding: 12px 20px;
   border-radius: 20px;
   background: #fff;
   color: var(--ink);
   font-size: 16px;
   font-weight: 600;
+  line-height: 20px;
   text-align: center;
   box-shadow: var(--shadow-float);
   pointer-events: none;

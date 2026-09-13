@@ -13,6 +13,8 @@
 }
 
 .frame {
+  --u: calc(100cqw / 393);
+  --v: calc(100cqh / 852);
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -68,8 +70,8 @@
   position: absolute;
   left: 50%;
   top: 28%;
-  width: 420px;
-  height: 420px;
+  width: min(420px, 110cqw);
+  height: min(420px, 110cqw);
   translate: -50% -50%;
   border-radius: 50%;
   background: radial-gradient(
@@ -84,9 +86,9 @@
 .game-intro__food {
   position: absolute;
   left: 50%;
-  top: 88px;
-  width: 320px;
-  height: 320px;
+  top: calc(88 * var(--v));
+  width: min(320px, 82cqw);
+  height: min(320px, 82cqw);
   translate: -50% 0;
   object-fit: contain;
   filter: drop-shadow(0 18px 28px rgba(31, 31, 31, 0.28));
@@ -96,13 +98,13 @@
 .game-intro__new {
   position: absolute;
   left: 50%;
-  top: 400px;
+  top: calc(400 * var(--v));
   translate: -50% 0;
   padding: 6px 18px;
   border-radius: 99px;
   background: #fff;
   color: var(--ink);
-  font-size: 22px;
+  font-size: clamp(16px, 5.6cqw, 22px);
   font-weight: 700;
   letter-spacing: 0.08em;
   box-shadow: 0 8px 20px rgba(31, 31, 31, 0.18);
@@ -504,9 +506,9 @@
 
 .hpill {
   position: absolute;
-  top: 16px;
-  width: 38px;
-  height: 38px;
+  top: max(12px, calc(16 * var(--v)));
+  width: clamp(34px, calc(38 * var(--u)), 38px);
+  height: clamp(34px, calc(38 * var(--u)), 38px);
   padding: 8px;
   border-radius: var(--r-pill);
   color: var(--ink);
@@ -526,12 +528,12 @@
 }
 
 .hpill--rewards {
-  left: 16px;
+  left: clamp(10px, calc(16 * var(--u)), 16px);
 }
 
 .hpill--bell {
   left: auto;
-  right: 16px;
+  right: clamp(10px, calc(16 * var(--u)), 16px);
 }
 
 .hpill:active .hpill__icon {
@@ -545,7 +547,6 @@
 /* ---------- XP block: 267x122 at 63,341 ---------- */
 
 .xpinfo {
-  --u: calc(100cqw / 393);
   position: absolute;
   left: calc(63 * var(--u));
   top: calc(341 * 100cqh / 852);
@@ -553,7 +554,7 @@
   height: calc(122 * var(--u));
   translate: none;
   transform: none;
-  z-index: 3;
+  z-index: 4;
   pointer-events: none;
   overflow: visible;
 }
@@ -777,38 +778,51 @@
   box-shadow: var(--cta-inset);
 }
 
-.playbtn {
+/* Vertical: Играть (hug) + preview (fill). Frame is placed on the artboard. */
+.playdock {
   position: absolute;
-  left: 50%;
-  top: calc(479 * 100cqh / 852);
-  width: min(171px, 48%);
-  padding: 17px 0;
-  translate: -50% 0;
+  left: clamp(12px, calc(16 * var(--u)), 16px);
+  right: clamp(12px, calc(16 * var(--u)), 16px);
+  top: calc(479 * var(--v));
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, calc(16 * var(--v)), 16px);
+  width: auto;
 }
 
-.playbtn--dock {
+.playdock--dock:not(.is-on) {
   opacity: 0;
   pointer-events: none;
-  translate: -50% 10px;
+  translate: 0 10px;
+}
+
+.playdock--dock {
   transition:
     opacity 0.22s var(--ease-out),
     translate 0.22s var(--ease-out);
 }
 
-.playbtn--dock.is-on {
+.playbtn {
+  position: static;
+  flex: 0 0 auto;
+  width: min(171px, 56cqw);
+  height: 54px;
+  padding: 17px 0;
+}
+
+.playbtn--dock {
   opacity: 1;
   pointer-events: auto;
-  translate: -50% 0;
 }
 
 /* ---------- The 361x215 media block under the button ---------- */
 
 .media {
-  position: absolute;
-  left: 16px;
-  top: calc(549 * 100cqh / 852);
-  width: calc(100% - 32px);
+  position: static;
+  flex: 0 0 auto;
+  width: 100%;
   height: clamp(160px, calc(215 * 100cqh / 852), 240px);
   border-radius: var(--r-card);
   background: var(--white);
@@ -816,7 +830,6 @@
   border: none;
   padding: 0;
   display: block;
-  z-index: 3;
 }
 
 .media img {
@@ -852,7 +865,7 @@
   position: absolute;
   top: 0;
   width: 25%;
-  height: 60px;
+  height: 100%;
 }
 
 .navbar__tab--home {
@@ -914,12 +927,16 @@
 }
 
 .xpcard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
   flex: 0 0 144px;
+  width: 144px;
   height: 104px;
   border-radius: var(--r-card-sm);
   background: var(--card);
   padding: 12px;
-  position: relative;
   text-align: left;
   overflow: visible;
 }
@@ -936,10 +953,8 @@
 }
 
 .xpcard__amount {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  width: 120px;
+  width: 100%;
+  min-width: 0;
   font-size: 24px;
   font-weight: 500;
   line-height: 28px;
@@ -948,11 +963,8 @@
 }
 
 .xpcard__label {
-  position: absolute;
-  left: 12px;
-  top: 60px;
-  width: 120px;
-  height: 32px;
+  width: 100%;
+  min-width: 0;
   font-size: 15px;
   font-weight: 500;
   line-height: 16px;
@@ -1008,9 +1020,11 @@
 
 .menu__profile {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  height: 44px;
+  height: auto;
+  min-height: 44px;
 }
 
 .menu__ava {
@@ -1213,9 +1227,14 @@
 /* Reward card: colour and ray motion come from the sticker theme. */
 .featured {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
   left: auto;
   width: 100%;
   height: 296px;
+  padding: 16px;
   border-radius: 24px;
   overflow: hidden;
   isolation: isolate;
@@ -1332,10 +1351,10 @@
 }
 
 .featured__name {
-  position: absolute;
-  left: 16px;
-  top: 214px;
+  position: relative;
   margin: 0;
+  width: 100%;
+  min-width: 0;
   font-size: 20px;
   font-weight: 500;
   line-height: 26px;
@@ -1344,11 +1363,10 @@
 }
 
 .featured__desc {
-  position: absolute;
-  left: 16px;
-  top: 240px;
-  width: 284px;
+  position: relative;
   margin: 0;
+  width: 100%;
+  min-width: 0;
   font-size: 15px;
   font-weight: 400;
   line-height: 20px;
@@ -1459,15 +1477,40 @@
     top: 10px;
   }
 
+  .xpinfo {
+    top: calc(300 * var(--v));
+  }
+
+  .playdock {
+    top: calc(468 * var(--v));
+    gap: 10px;
+  }
+
+  .media {
+    height: clamp(132px, calc(180 * var(--v)), 200px);
+  }
+
   .xpinfo__note {
-    font-size: 15px;
+    font-size: calc(15 * var(--u));
+  }
+
+  .pager-dots {
+    top: calc(292 * var(--v));
   }
 }
 
-@container frame (max-width: 360px) {
-  .xpinfo__level {
-    font-size: 20px;
-    letter-spacing: -1px;
+@container frame (max-height: 640px) {
+  .xpinfo {
+    top: calc(286 * var(--v));
+  }
+
+  .playdock {
+    top: calc(472 * var(--v));
+  }
+
+  .pager--hub,
+  .cast {
+    height: calc(390 * var(--v));
   }
 
   .playbtn,
@@ -1475,6 +1518,37 @@
   .featured__stick {
     height: 48px;
     font-size: 15px;
+  }
+}
+
+@container frame (max-width: 360px) {
+  .xpinfo__level {
+    font-size: calc(20 * var(--u));
+    letter-spacing: calc(-1 * var(--u));
+  }
+
+  .playbtn,
+  .cta,
+  .featured__stick {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .menu {
+    padding: 16px 12px;
+    gap: 16px;
+  }
+}
+
+@container frame (max-width: 340px) {
+  .xpcard {
+    flex-basis: 128px;
+    width: 128px;
+  }
+
+  .menu__title {
+    font-size: 18px;
+    letter-spacing: -1px;
   }
 }
 

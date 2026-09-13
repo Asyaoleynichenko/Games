@@ -1,89 +1,36 @@
-import { type Ref, type UIEvent, useState } from 'react'
-import { Match3 } from '../game/Match3'
-import { Tetris } from '../game/Tetris'
-import { ToastStack } from '../game/ToastStack'
-import { characters } from '../../data/characters'
+import { TETRIS_COLORS } from '../../screens/TetrisScreen'
 import { useHub } from '../../state/HubState'
-import { ThemePager } from './Pager'
 
-const ROUND_XP = 40
+const PREVIEW = [
+  [0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+  [0, 0, 0, 2, 2, 2, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [1, 2, 2, 3, 3, 4, 4, 5, 5, 1],
+  [1, 2, 0, 3, 4, 4, 0, 5, 5, 1],
+  [2, 0, 2, 3, 3, 4, 5, 0, 5, 0],
+  [0, 1, 1, 0, 3, 3, 0, 4, 0, 0],
+]
 
 /**
- * Play CTA + live 361×215 board. On the hub it sits behind the curtain and
- * is uncovered when the sheet is dragged down; PlayScreen uses the same dock
- * as a dedicated window.
+ * Hub play CTA + the one mini-game preview (Завтрак-тетрис, Figma 133:1714).
  */
 export function PlayDock({
-  progress,
-  pagerRef,
-  onScroll,
-  enabled,
   docked = false,
   revealed = true,
 }: {
-  progress: number
-  pagerRef: Ref<HTMLDivElement>
-  onScroll: (event: UIEvent<HTMLDivElement>) => void
-  enabled: boolean
+  progress?: number
+  pagerRef?: unknown
+  onScroll?: unknown
+  enabled?: boolean
   docked?: boolean
   revealed?: boolean
 }) {
-  const { addXp, openTetris } = useHub()
-  const [seeds, setSeeds] = useState([1, 1, 1])
-  const [drops, setDrops] = useState(0)
-  const [tetrisDrops, setTetrisDrops] = useState(0)
-
-  const active = Math.max(0, Math.min(2, Math.round(progress)))
-  const current = characters[active] ?? characters[0]
-
-  const score = () => addXp(ROUND_XP)
-
-  const play = () => {
-    openTetris('tutorial')
-    if (current.id === 'toast') setDrops((count) => count + 1)
-    else if (current.id === 'lemon') setTetrisDrops((count) => count + 1)
-    else {
-      setSeeds((list) =>
-        list.map((value, index) => (index === active ? value + 1 : value)),
-      )
-    }
-  }
+  const { openTetris } = useHub()
+  const play = () => openTetris('playing')
 
   return (
-    <>
-      <ThemePager pagerRef={pagerRef} onScroll={onScroll} className="pager--play">
-        {characters.map((character, index) => (
-          <div className="pager__page" key={character.id}>
-            <div className="media media--live">
-              {character.id === 'egg' && (
-                <Match3
-                  variant="breakfast"
-                  seed={seeds[index]}
-                  enabled={enabled && Math.abs(progress - index) < 0.5}
-                  onScore={score}
-                />
-              )}
-              {character.id === 'toast' && (
-                <ToastStack
-                  seed={seeds[index]}
-                  dropTick={drops}
-                  enabled={enabled && Math.abs(progress - index) < 0.5}
-                  onScore={score}
-                />
-              )}
-              {character.id === 'lemon' && (
-                <Tetris
-                  seed={seeds[index]}
-                  dropTick={tetrisDrops}
-                  enabled={enabled && Math.abs(progress - index) < 0.5}
-                  onScore={score}
-                />
-              )}
-            </div>
-          </div>
-        ))}
-      </ThemePager>
-
+    <div className={`playdock${docked ? ' playdock--dock' : ''}${revealed ? ' is-on' : ''}`}>
       <button
         className={`playbtn playbtn--live${docked ? ' playbtn--dock' : ''}${
           revealed ? ' is-on' : ''
@@ -94,6 +41,26 @@ export function PlayDock({
       >
         Играть
       </button>
-    </>
+
+      <button
+        className="media media--live media--tetris"
+        type="button"
+        onClick={play}
+        disabled={!revealed}
+        aria-label="Открыть завтрак-тетрис"
+      >
+        <div className="tgame__field">
+          {PREVIEW.flatMap((row, r) =>
+            row.map((kind, c) => (
+              <span
+                key={`${r}-${c}`}
+                className={`tgame__cell${kind ? ' is-on' : ''}`}
+                style={kind ? { ['--cell' as string]: TETRIS_COLORS[kind - 1] } : undefined}
+              />
+            )),
+          )}
+        </div>
+      </button>
+    </div>
   )
 }

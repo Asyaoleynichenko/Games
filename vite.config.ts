@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  // Project site: https://asyaoleynichenko.github.io/Games/
+  base: '/Games/',
   server: {
     port: 5180,
     // `::` is dual-stack on macOS/Node, so both localhost ([::1]) and

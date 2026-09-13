@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
+import { RaysBurst } from '../components/frame/Rays'
 import { Cta } from '../components/Ui'
 import { useHub, type TetrisPhase } from '../state/HubState'
+
+export const TETRIS_COLORS = ['#ff7a29', '#ffcc40', '#20bf7a', '#ff47fc', '#5ca8ff']
 
 const COLS = 10
 const ROWS = 18
 const GOAL = 10
 const SUCCESS_XP = 80
 const LINE_SCORES = [0, 100, 300, 500, 800]
-const COLORS = ['#ff7a29', '#ffcc40', '#20bf7a', '#ff47fc', '#5ca8ff', '#47c4c4', '#ff6b6b']
+const COLORS = TETRIS_COLORS
 const KICKS = [
   [0, 0],
   [0, -1],
@@ -102,6 +105,19 @@ function paint(board: number[][], piece: Piece | null) {
 
 function formatScore(value: number) {
   return value.toLocaleString('ru-RU').replace(/\u00A0/g, ' ')
+}
+
+/** Stacked rows from Figma 133:1714 — used for paused / end-state previews. */
+function figmaBoard() {
+  const preview = emptyBoard()
+  const palette = [1, 2, 3, 4, 5]
+  for (let r = ROWS - 4; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if ((r + c) % 3 === 0) continue
+      preview[r][c] = palette[(r + c) % palette.length]
+    }
+  }
+  return preview
 }
 
 function BackIcon() {
@@ -267,24 +283,15 @@ export function TetrisScreen() {
   }, [startRound, tetrisPhase])
 
   useEffect(() => {
-    const filled = boardRef.current.some((row) => row.some(Boolean))
-    if (filled || pieceRef.current) return
-    if (
-      tetrisPhase !== 'playing' &&
-      tetrisPhase !== 'paused' &&
-      tetrisPhase !== 'success' &&
-      tetrisPhase !== 'failure'
-    ) {
+    if (tetrisPhase === 'playing' && !pieceRef.current) startRound()
+  }, [startRound, tetrisPhase])
+
+  useEffect(() => {
+    if (tetrisPhase !== 'paused' && tetrisPhase !== 'success' && tetrisPhase !== 'failure') {
       return
     }
-    const preview = emptyBoard()
-    const palette = [1, 2, 3, 4, 5]
-    for (let r = ROWS - 4; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        if ((r + c) % 3 === 0) continue
-        preview[r][c] = palette[(r + c) % palette.length]
-      }
-    }
+    if (boardRef.current.some((row) => row.some(Boolean))) return
+    const preview = figmaBoard()
     setBoard(preview)
     boardRef.current = preview
     const falling = spawn(2)
@@ -338,120 +345,127 @@ export function TetrisScreen() {
 
   return (
     <div className="tgame">
-      <div className="tgame__bg" aria-hidden />
+      <RaysBurst variant="purple" />
       <div className="tgame__scrim" aria-hidden />
 
-      <header className="tgame__head">
-        <button
-          className="tgame__icon"
-          type="button"
-          aria-label="Назад"
-          onClick={() => goto('hub')}
-        >
-          <BackIcon />
-        </button>
-        <h1 className="tgame__title">Завтрак-тетрис</h1>
-        <button
-          className="tgame__icon"
-          type="button"
-          aria-label="Пауза"
-          onClick={() => {
-            if (tetrisPhase === 'playing') setTetrisPhase('paused')
-            else if (tetrisPhase === 'paused') setTetrisPhase('playing')
-          }}
-        >
-          <PauseIcon />
-        </button>
-      </header>
+      <div className="tgame__stack">
+        <header className="tgame__head">
+          <button
+            className="tgame__icon"
+            type="button"
+            aria-label="Назад"
+            onClick={() => goto('hub')}
+          >
+            <BackIcon />
+          </button>
+          <h1 className="tgame__title">Завтрак-тетрис</h1>
+          <button
+            className="tgame__icon"
+            type="button"
+            aria-label="Пауза"
+            onClick={() => {
+              if (tetrisPhase === 'playing') setTetrisPhase('paused')
+              else if (tetrisPhase === 'paused') setTetrisPhase('playing')
+            }}
+          >
+            <PauseIcon />
+          </button>
+        </header>
 
-      <section className="tgame__stats">
-        <div>
-          <p>Счёт</p>
-          <strong>{formatScore(score)}</strong>
-        </div>
-        <div>
-          <p>Линии</p>
-          <strong>
-            {lines} / {GOAL}
-          </strong>
-        </div>
-        <div>
-          <p>Уровень</p>
-          <strong>{level}</strong>
-        </div>
-      </section>
-
-      <div className="tgame__play">
-        <div
-          className="tgame__board"
-          onPointerDown={onBoardPointerDown}
-          onPointerMove={onBoardPointerMove}
-          onPointerUp={onBoardPointerUp}
-          onPointerCancel={onBoardPointerUp}
-        >
-          {cells.flatMap((row, r) =>
-            row.map((kind, c) => (
-              <span
-                key={`${r}-${c}`}
-                className={`tgame__cell${kind ? ' is-on' : ''}`}
-                style={kind ? { background: COLORS[kind - 1] } : undefined}
-              />
-            )),
-          )}
-        </div>
-
-        <aside className="tgame__side">
-          <div className="tgame__card">
-            <p>Дальше</p>
-            <div className="tgame__next">
-              {SHAPES[nextKind].map((row, r) =>
-                row.map((on, c) => (
-                  <span
-                    key={`${r}-${c}`}
-                    className={on ? 'is-on' : ''}
-                    style={{
-                      gridColumn: c + 1,
-                      gridRow: r + 1,
-                      background: on ? COLORS[3] : 'transparent',
-                    }}
-                  />
-                )),
-              )}
-            </div>
+        <section className="tgame__stats">
+          <div className="tgame__stat">
+            <p>Счёт</p>
+            <strong>{formatScore(score)}</strong>
           </div>
-          <div className="tgame__card tgame__card--goal">
-            <p>Цель</p>
+          <div className="tgame__stat">
+            <p>Линии</p>
             <strong>
-              Собери
-              <br />
-              {GOAL} линий
+              {lines} / {GOAL}
             </strong>
           </div>
-          <div className="tgame__card tgame__card--combo">
-            <p>Комбо</p>
-            <strong>×{Math.max(1, combo)}</strong>
+          <div className="tgame__stat">
+            <p>Уровень</p>
+            <strong>{level}</strong>
           </div>
-        </aside>
-      </div>
+        </section>
 
-      <div className="tgame__hint">
-        <span>Свайп — двигать</span>
-        <span>Тап — поворот</span>
-      </div>
+        <div className="tgame__play">
+          <div className="tgame__board-slot">
+            <div
+              className="tgame__board"
+              onPointerDown={onBoardPointerDown}
+              onPointerMove={onBoardPointerMove}
+              onPointerUp={onBoardPointerUp}
+              onPointerCancel={onBoardPointerUp}
+            >
+              <div className="tgame__lines" aria-hidden />
+              <div className="tgame__field">
+                {cells.flatMap((row, r) =>
+                  row.map((kind, c) => (
+                    <span
+                      key={`${r}-${c}`}
+                      className={`tgame__cell${kind ? ' is-on' : ''}`}
+                      style={kind ? { ['--cell' as string]: COLORS[kind - 1] } : undefined}
+                    />
+                  )),
+                )}
+              </div>
+            </div>
+          </div>
 
-      <div className="tgame__progress">
-        <div>
-          <span>До награды</span>
-          <span>
-            {remain} {remain === 1 ? 'линия' : remain < 5 ? 'линии' : 'линий'}
-          </span>
+          <aside className="tgame__side">
+            <div className="tgame__card">
+              <p>Дальше</p>
+              <div className="tgame__next">
+                {SHAPES[nextKind].map((row, r) =>
+                  row.map((on, c) => (
+                    <span
+                      key={`${r}-${c}`}
+                      className={on ? 'is-on' : ''}
+                      style={{
+                        gridColumn: c + 1,
+                        gridRow: r + 1,
+                        background: on ? '#ff47fc' : 'transparent',
+                      }}
+                    />
+                  )),
+                )}
+              </div>
+            </div>
+            <div className="tgame__card tgame__card--goal">
+              <p>Цель</p>
+              <strong>
+                Собери
+                <br />
+                {GOAL} линий
+              </strong>
+            </div>
+            <div className="tgame__card tgame__card--combo">
+              <p>Комбо</p>
+              <strong>×{Math.max(1, combo)}</strong>
+            </div>
+          </aside>
         </div>
-        <div className="tgame__bar">
-          <i style={{ width: `${(lines / GOAL) * 100}%` }} />
-        </div>
-      </div>
 
-      <p className="tgame__note">Прогресс раунда сохраняется при паузе</p>
+        <div className="tgame__hint">
+          <span>Свайп — двигать</span>
+          <span>Тап — поворот</span>
+        </div>
+
+        <div className="tgame__progress">
+          <div className="tgame__progress-row">
+            <span>До награды</span>
+            <span>
+              {remain} {remain === 1 ? 'линия' : remain < 5 ? 'линии' : 'линий'}
+            </span>
+          </div>
+          <div className="tgame__bar">
+            <i style={{ width: `${(lines / GOAL) * 100}%` }} />
+          </div>
+        </div>
+
+        <p className="tgame__note">Прогресс раунда сохраняется при паузе</p>
+      </div>
 
       {overlay && (
         <div className="tgame__dim">

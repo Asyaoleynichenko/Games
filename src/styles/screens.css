@@ -90,6 +90,15 @@
   overflow: hidden;
 }
 
+.progress-pill__star--mid {
+  position: absolute;
+  left: 48%;
+  top: 4px;
+  z-index: 2;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
 .progress-block {
   position: relative;
   z-index: 2;
@@ -263,5 +272,31 @@
   .screen-actions {
     padding-top: 12px;
     padding-bottom: 16px;
+  }
+
+  .screen-hero--lg {
+    width: min(100%, 300px);
+  }
+}
+
+@container (max-width: 340px) {
+  .quest-grid {
+    gap: 6px;
+  }
+
+  .quest-cell {
+    padding: 8px 4px 6px;
+  }
+
+  .streak-week {
+    gap: 4px;
+  }
+
+  .screen-title {
+    font-size: 18px;
+  }
+
+  .progress-pill {
+    height: 34px;
   }
 }
