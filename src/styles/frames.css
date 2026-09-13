@@ -260,7 +260,7 @@
   left: 0;
   right: 0;
   top: 0;
-  bottom: var(--nav-bar);
+  bottom: 0;
   z-index: 4;
   overflow-y: auto;
   overflow-x: hidden;
@@ -279,6 +279,7 @@
 */
 .frame__scroll--sheet {
   top: calc(482 * 100cqh / 852);
+  bottom: 0;
   background: var(--white);
   border-radius: 20px 20px 0 0;
   overflow: hidden;
@@ -845,8 +846,9 @@
 .navbar img {
   display: block;
   width: 100%;
-  height: 100%;
+  height: var(--nav-h);
   object-fit: cover;
+  object-position: top;
 }
 
 /* Hit areas over the exported nav artwork. */
@@ -883,7 +885,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px 16px;
+  padding: 20px 16px calc(20px + var(--nav-bar));
   background: var(--white);
   border-radius: 20px 20px 0 0;
   z-index: 4;
@@ -1243,7 +1245,7 @@
   position: relative;
   left: auto;
   right: auto;
-  padding: 20px 16px 80px;
+  padding: 20px 16px calc(20px + var(--nav-bar));
   border-radius: 20px 20px 0 0;
   background: transparent;
   z-index: 2;

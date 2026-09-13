@@ -293,7 +293,7 @@ export const HubCurtain = forwardRef<
         className={`frame__scroll frame__scroll--sheet${open ? ' is-open' : ''}${
           showPull ? ' is-lowered' : ''
         }`}
-        style={{ top: topPct, bottom: 'var(--nav-bar)', pointerEvents: 'auto' }}
+        style={{ top: topPct, bottom: 0, pointerEvents: 'auto' }}
         animate={dragging ? { top: topPct, transition: { duration: 0 } } : { top: topPct }}
         transition={{ type: 'spring', stiffness: 380, damping: 34, mass: 0.9 }}
       >

@@ -87,7 +87,6 @@ export function QuestScreen() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 18 }}
               transition={{ duration: 0.26 }}
-              style={{ marginTop: 20 }}
             >
               <div className="quest-sheet-head">
                 <div>
@@ -164,7 +163,7 @@ export function QuestScreen() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              style={{ marginTop: 20, textAlign: 'center' }}
+              style={{ textAlign: 'center' }}
             >
               <h3 className="screen-title">Задание выполнено!</h3>
               <motion.div

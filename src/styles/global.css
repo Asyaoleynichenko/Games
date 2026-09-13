@@ -199,14 +199,25 @@ img {
 }
 
 .sheet--fill {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
+  margin-top: 16px;
+  margin-bottom: 0;
+  padding-bottom: calc(20px + var(--nav-bar));
+  min-height: 0;
 }
 
 .section-title {
   margin: 0 0 12px;
   font-size: 20px;
   font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
   color: var(--ink);
+}
+
+.sheet .cta,
+.sheet .cta--block {
+  width: 100%;
 }
 
 .card {
