@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { StickerImage } from '../components/Character'
 import { BottomSheet, Cta } from '../components/Ui'
 import { characters } from '../data/characters'
+import { basketQuest } from '../data/quests'
 import { stickerById } from '../data/stickers'
 import { useHub } from '../state/HubState'
 
@@ -80,6 +81,39 @@ export function ClaimErrorSheet() {
           Закрыть
         </Cta>
       </div>
+    </BottomSheet>
+  )
+}
+
+/** Bottom-nav «Каталог». */
+export function CatalogSheet() {
+  const { closeSheet, goto } = useHub()
+
+  return (
+    <BottomSheet onClose={closeSheet}>
+      <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, lineHeight: '32px' }}>
+        Каталог
+      </h2>
+      <p style={{ margin: '8px 0 16px', fontSize: 16, color: 'var(--ink-muted)' }}>
+        Подборка к завтраку — собери корзину и получи XP
+      </p>
+      <div className="svctabs__panel" style={{ marginBottom: 16 }}>
+        {basketQuest.products.map((product) => (
+          <div key={product.id} className="svctabs__card">
+            <strong>{product.glyph}</strong>
+            <span>{product.name}</span>
+          </div>
+        ))}
+      </div>
+      <Cta
+        block
+        onClick={() => {
+          closeSheet()
+          goto('quest')
+        }}
+      >
+        К заданию
+      </Cta>
     </BottomSheet>
   )
 }

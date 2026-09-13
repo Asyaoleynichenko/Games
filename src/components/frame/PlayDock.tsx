@@ -30,7 +30,7 @@ export function PlayDock({
   const play = () => openTetris('playing')
 
   return (
-    <div className={`playdock${docked ? ' playdock--dock' : ''}${revealed ? ' is-on' : ''}`}>
+    <>
       <button
         className={`playbtn playbtn--live${docked ? ' playbtn--dock' : ''}${
           revealed ? ' is-on' : ''
@@ -61,6 +61,6 @@ export function PlayDock({
           )}
         </div>
       </button>
-    </div>
+    </>
   )
 }

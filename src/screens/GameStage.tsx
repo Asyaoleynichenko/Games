@@ -41,16 +41,20 @@ export function GameStage() {
     openSheet,
     queueSticker,
     hubPhase,
-    hubMenuOpen,
+    hubSheet,
     setHubPhase,
-    setHubMenuOpen,
+    setHubSheet,
     openTetris,
   } = useHub()
 
   const { ref, fruitRef, progress, onScroll, onFruitScroll, jumpTo } = useThemePager()
   const curtainRef = useRef<HubCurtainHandle>(null)
   const [curtainTop, setCurtainTop] = useState(
-    hubMenuOpen ? HUB_SHEET : HUB_SHEET_LOWERED,
+    hubSheet === 'lowered'
+      ? HUB_SHEET_LOWERED
+      : hubSheet === 'expanded'
+        ? HUB_SHEET_EXPANDED
+        : HUB_SHEET,
   )
   const [openId, setOpenId] = useState<string | null>(
     screen === 'awards' ? 'plus-50' : null,
@@ -70,8 +74,8 @@ export function GameStage() {
   }, [screen])
 
   useEffect(() => {
-    curtainRef.current?.snapTo(hubMenuOpen ? 'collapsed' : 'lowered')
-  }, [hubMenuOpen])
+    curtainRef.current?.snapTo(hubSheet)
+  }, [hubSheet])
 
   const pickNeighbor = (id: string) => {
     const index = characters.findIndex((item) => item.id === id)
@@ -116,6 +120,7 @@ export function GameStage() {
           collapsedTop={HUB_SHEET}
           expandedTop={HUB_SHEET_EXPANDED}
           loweredTop={HUB_SHEET_LOWERED}
+          stop={hubSheet}
           onTop={onCurtainTop}
         >
           <div className="frame__canvas" style={{ minHeight: MENU_HEIGHT }}>
@@ -126,8 +131,6 @@ export function GameStage() {
               onAction={(target) => {
                 if (target === 'quest') goto('quest')
                 else if (target === 'game') {
-                  setHubMenuOpen(false)
-                  curtainRef.current?.snapTo('lowered')
                   openTetris('tutorial')
                 } else openSheet('streak')
               }}
@@ -181,18 +184,16 @@ export function GameStage() {
       <FrameNav
         onHome={() => {
           setHubPhase('ready')
-          if (mode === 'hub' && playRevealed) {
-            setHubMenuOpen(true)
-            curtainRef.current?.snapTo('collapsed')
-          } else {
-            setHubMenuOpen(false)
-            goto('hub')
-          }
+          setHubSheet('collapsed')
+          curtainRef.current?.snapTo('collapsed')
+          goto('hub')
         }}
+        onCatalog={() => openSheet('catalog')}
+        onClubs={() => goto('awards-grid')}
         onProfile={() => {
           if (mode === 'hub') {
-            setHubMenuOpen(true)
-            curtainRef.current?.snapTo('collapsed')
+            setHubSheet('expanded')
+            curtainRef.current?.snapTo('expanded')
           } else goto('menu')
         }}
       />

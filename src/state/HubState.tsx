@@ -47,7 +47,15 @@ export type TetrisPhase =
   | 'failure'
   | 'offline'
 
-export type SheetId = 'streak' | 'claim-error' | { sticker: string } | null
+export type SheetId =
+  | 'streak'
+  | 'claim-error'
+  | 'catalog'
+  | { sticker: string }
+  | null
+
+/** Hub white sheet: halfway (default), fully up, or down over play. */
+export type HubSheet = 'expanded' | 'collapsed' | 'lowered'
 
 export type CharacterMood =
   | 'idle'
@@ -82,7 +90,7 @@ interface State {
   xpToNext: number
   progress: number
   hubPhase: HubPhase
-  hubMenuOpen: boolean
+  hubSheet: HubSheet
   tetrisPhase: TetrisPhase
 }
 
@@ -98,7 +106,7 @@ interface Actions {
   claimReward: (id: string) => void
   resetDemo: () => void
   setHubPhase: (phase: HubPhase) => void
-  setHubMenuOpen: (open: boolean) => void
+  setHubSheet: (sheet: HubSheet) => void
   setTetrisPhase: (phase: TetrisPhase) => void
   openTetris: (phase?: TetrisPhase) => void
 }
@@ -108,7 +116,7 @@ const Ctx = createContext<(State & Actions) | null>(null)
 export function HubProvider({ children }: { children: ReactNode }) {
   const [screen, setScreen] = useState<ScreenId>('hub')
   const [sheet, setSheet] = useState<SheetId>(null)
-  const [characterIndex, setCharacterIndex] = useState(2) // lemon — the brief's hero
+  const [characterIndex, setCharacterIndex] = useState(0) // egg — Hub / Menu 133:768
   const [level, setLevel] = useState(4)
   const [xp, setXp] = useState(415)
   const [xpMax, setXpMax] = useState(xpForLevel(4))
@@ -125,7 +133,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
   )
   const [moodPulse, setMoodPulse] = useState<CharacterMood | null>(null)
   const [hubPhase, setHubPhase] = useState<HubPhase>('ready')
-  const [hubMenuOpen, setHubMenuOpen] = useState(false)
+  const [hubSheet, setHubSheet] = useState<HubSheet>('collapsed')
   const [tetrisPhase, setTetrisPhase] = useState<TetrisPhase>('tutorial')
 
   useEffect(() => {
@@ -199,7 +207,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
     setLevel(4)
     setXp(415)
     setXpMax(xpForLevel(4))
-    setCharacterIndex(2)
+    setCharacterIndex(0)
     setUnlocked(initiallyUnlocked)
     setPlaced(initiallyPlaced)
     setAccessories([])
@@ -211,7 +219,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
     setMoodPulse(null)
     setSheet(null)
     setHubPhase('ready')
-    setHubMenuOpen(false)
+    setHubSheet('collapsed')
     setTetrisPhase('tutorial')
     setScreen('hub')
   }, [])
@@ -249,7 +257,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
       xpToNext: Math.max(0, xpMax - xp),
       progress: Math.min(1, xp / xpMax),
       hubPhase,
-      hubMenuOpen,
+      hubSheet,
       tetrisPhase,
       goto,
       openSheet,
@@ -262,7 +270,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
       claimReward,
       resetDemo,
       setHubPhase,
-      setHubMenuOpen,
+      setHubSheet,
       setTetrisPhase,
       openTetris,
     }),
@@ -284,7 +292,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
       lastXpGain,
       mood,
       hubPhase,
-      hubMenuOpen,
+      hubSheet,
       tetrisPhase,
       goto,
       openSheet,
@@ -296,7 +304,7 @@ export function HubProvider({ children }: { children: ReactNode }) {
       claimReward,
       resetDemo,
       setHubPhase,
-      setHubMenuOpen,
+      setHubSheet,
       setTetrisPhase,
       openTetris,
     ],

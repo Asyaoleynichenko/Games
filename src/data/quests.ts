@@ -60,8 +60,15 @@ export const claimedRewards: Reward[] = [
   { id: 'promo-bakery', title: '−15% на выпечку', subtitle: 'Получено 30 июля' },
 ]
 
-/** The «Мои сервисы» tab row on the hub, verbatim from Figma. */
-export const serviceTabs = ['Мои\u00a0сервисы', 'Акции', 'Заказы', 'Мои\u00a0данные']
+/** Service tabs on the hub menu — all four must fit the 361px row. */
+export const serviceTabs = [
+  { id: 'services', label: 'Мои сервисы' },
+  { id: 'promos', label: 'Акции' },
+  { id: 'orders', label: 'Заказы' },
+  { id: 'data', label: 'Мои данные' },
+] as const
+
+export type ServiceTabId = (typeof serviceTabs)[number]['id']
 
 export const menuTiles = [
   { id: 'favorites', label: 'Избранное', art: 'tileFavorites' },

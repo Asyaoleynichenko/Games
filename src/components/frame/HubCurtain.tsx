@@ -35,17 +35,20 @@ export const HubCurtain = forwardRef<
     collapsedTop: number
     expandedTop: number
     loweredTop?: number
+    stop?: HubCurtainStop
     children: ReactNode
     onTop?: (top: number) => void
   }
 >(function HubCurtain(
-  { collapsedTop, expandedTop, loweredTop, children, onTop },
+  { collapsedTop, expandedTop, loweredTop, stop = 'collapsed', children, onTop },
   ref,
 ) {
   const floor = loweredTop ?? collapsedTop
-  const [top, setTop] = useState(collapsedTop)
+  const startTop =
+    stop === 'expanded' ? expandedTop : stop === 'lowered' ? floor : collapsedTop
+  const [top, setTop] = useState(startTop)
   const [dragging, setDragging] = useState(false)
-  const topRef = useRef(collapsedTop)
+  const topRef = useRef(startTop)
   const panelRef = useRef<HTMLDivElement>(null)
   const pullRef = useRef<HTMLDivElement>(null)
   const drag = useRef<{

@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { sideArt, ui } from '../../assets'
 import { useAmbientBackground } from '../../motion/ambient'
 import { usePrefersReducedMotion } from '../../motion/reduced'
+import { useHub } from '../../state/HubState'
 import PrismaticBurst from './PrismaticBurst'
 import { LemonHalftone, RaysBurst } from './Rays'
 
@@ -298,11 +299,17 @@ export function FrameHeader({ onRewards, onTasks }: HeaderProps) {
  */
 export function FrameNav({
   onHome,
+  onCatalog,
+  onClubs,
   onProfile,
 }: {
   onHome: () => void
+  onCatalog?: () => void
+  onClubs?: () => void
   onProfile: () => void
 }) {
+  const { goto, openSheet } = useHub()
+
   return (
     <div className="navbar">
       <img src={ui.bottomNav} alt="" />
@@ -310,6 +317,16 @@ export function FrameNav({
         className="navbar__tab navbar__tab--home"
         onClick={onHome}
         aria-label="Главная"
+      />
+      <button
+        className="navbar__tab navbar__tab--catalog"
+        onClick={onCatalog ?? (() => openSheet('catalog'))}
+        aria-label="Каталог"
+      />
+      <button
+        className="navbar__tab navbar__tab--clubs"
+        onClick={onClubs ?? (() => goto('awards-grid'))}
+        aria-label="Апельсин"
       />
       <button
         className="navbar__tab navbar__tab--profile"

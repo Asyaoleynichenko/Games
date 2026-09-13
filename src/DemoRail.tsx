@@ -3,6 +3,7 @@ import { frames, hardenedStates, type FrameId } from './data/frames'
 import {
   useHub,
   type HubPhase,
+  type HubSheet,
   type ScreenId,
   type TetrisPhase,
 } from './state/HubState'
@@ -41,7 +42,7 @@ export function DemoRail() {
     unlocked,
     characterIndex,
     hubPhase,
-    hubMenuOpen,
+    hubSheet,
     tetrisPhase,
     sheet,
     setCharacterIndex,
@@ -51,7 +52,7 @@ export function DemoRail() {
     addXp,
     pendingLevelUp,
     setHubPhase,
-    setHubMenuOpen,
+    setHubSheet,
     openTetris,
   } = useHub()
 
@@ -64,25 +65,25 @@ export function DemoRail() {
     }
     if (route.screen === 'hub') {
       setHubPhase('ready')
-      setHubMenuOpen(true)
+      setHubSheet('collapsed')
     }
     goto(route.screen)
   }
 
   const openHardened = (id: string) => {
-    const hub = (phase: HubPhase, menu: boolean) => {
+    const hub = (phase: HubPhase, sheet: HubSheet) => {
       setHubPhase(phase)
-      setHubMenuOpen(menu)
+      setHubSheet(sheet)
       goto('hub')
     }
     const tetris = (phase: TetrisPhase) => openTetris(phase)
 
-    if (id === 'hub-default') hub('ready', false)
-    else if (id === 'hub-menu') hub('ready', true)
-    else if (id === 'hub-loading') hub('loading', true)
-    else if (id === 'hub-offline') hub('offline', true)
-    else if (id === 'hub-empty') hub('empty', true)
-    else if (id === 'hub-long') hub('long', true)
+    if (id === 'hub-default') hub('ready', 'lowered')
+    else if (id === 'hub-menu') hub('ready', 'collapsed')
+    else if (id === 'hub-loading') hub('loading', 'collapsed')
+    else if (id === 'hub-offline') hub('offline', 'collapsed')
+    else if (id === 'hub-empty') hub('empty', 'collapsed')
+    else if (id === 'hub-long') hub('long', 'collapsed')
     else if (id === 'rewards-grid') goto('awards-grid')
     else if (id === 'rewards-detail') goto('awards')
     else if (id === 'rewards-claim-error') {
@@ -99,10 +100,10 @@ export function DemoRail() {
 
   const isHardenedOn = (id: string) => {
     if (id === 'hub-default') {
-      return screen === 'hub' && hubPhase === 'ready' && !hubMenuOpen
+      return screen === 'hub' && hubPhase === 'ready' && hubSheet === 'lowered'
     }
     if (id === 'hub-menu') {
-      return screen === 'hub' && hubPhase === 'ready' && hubMenuOpen
+      return screen === 'hub' && hubPhase === 'ready' && hubSheet === 'collapsed'
     }
     if (id === 'hub-loading') return screen === 'hub' && hubPhase === 'loading'
     if (id === 'hub-offline') return screen === 'hub' && hubPhase === 'offline'

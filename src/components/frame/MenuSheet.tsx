@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ui } from '../../assets'
 import {
   hubActions,
@@ -5,6 +6,7 @@ import {
   menuLinks,
   menuTiles,
   serviceTabs,
+  type ServiceTabId,
 } from '../../data/quests'
 import type { HubPhase } from '../../state/HubState'
 
@@ -47,6 +49,7 @@ export function MenuSheet({
   onRetry,
 }: MenuSheetProps) {
   const actions = phase === 'long' ? hubActionsLong : hubActions
+  const [tab, setTab] = useState<ServiceTabId>('services')
 
   return (
     <div
@@ -89,19 +92,49 @@ export function MenuSheet({
       </section>
 
       <section className="menu__tabsblock">
-        <div className="svctabs">
-          {serviceTabs.map((tab, index) => (
-            <span
-              key={tab}
-              className={`svctabs__item${index === 0 ? ' svctabs__item--active' : ''}`}
+        <div className="svctabs" role="tablist" aria-label="Разделы меню">
+          {serviceTabs.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === item.id}
+              className={`svctabs__item${tab === item.id ? ' svctabs__item--active' : ''}`}
+              onClick={() => setTab(item.id)}
             >
-              {tab}
-            </span>
+              {item.label}
+            </button>
           ))}
         </div>
-        <div className="promorow">
-          <img src={ui.promoRow} alt="Получите 1088 ₽ за прошлые покупки" />
-        </div>
+        {tab === 'services' && (
+          <div className="promorow">
+            <img src={ui.promoRow} alt="Получите 1088 ₽ за прошлые покупки" />
+          </div>
+        )}
+        {tab === 'promos' && (
+          <div className="svctabs__panel">
+            <button className="svctabs__card" type="button">
+              <strong>−20%</strong>
+              <span>На завтрак сегодня</span>
+            </button>
+            <button className="svctabs__card" type="button">
+              <strong>2=1</strong>
+              <span>Молочка из подборки</span>
+            </button>
+          </div>
+        )}
+        {tab === 'orders' && (
+          <div className="svctabs__empty">
+            <p>Пока нет заказов</p>
+            <span>Собери корзину — и заказ появится здесь</span>
+          </div>
+        )}
+        {tab === 'data' && (
+          <div className="svctabs__empty">
+            <p>Андрей Ивашин</p>
+            <span>+7 (921) 946-83-79</span>
+          </div>
+        )}
       </section>
 
       <div className="menu__profile">

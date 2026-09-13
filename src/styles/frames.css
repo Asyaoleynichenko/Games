@@ -554,7 +554,7 @@
   height: calc(122 * var(--u));
   translate: none;
   transform: none;
-  z-index: 4;
+  z-index: 3;
   pointer-events: none;
   overflow: visible;
 }
@@ -778,51 +778,38 @@
   box-shadow: var(--cta-inset);
 }
 
-/* Vertical: Играть (hug) + preview (fill). Frame is placed on the artboard. */
-.playdock {
+.playbtn {
   position: absolute;
-  left: clamp(12px, calc(16 * var(--u)), 16px);
-  right: clamp(12px, calc(16 * var(--u)), 16px);
-  top: calc(479 * var(--v));
+  left: 50%;
+  top: calc(479 * 100cqh / 852);
+  width: min(171px, 48%);
+  padding: 17px 0;
+  translate: -50% 0;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(10px, calc(16 * var(--v)), 16px);
-  width: auto;
 }
 
-.playdock--dock:not(.is-on) {
+.playbtn--dock {
   opacity: 0;
   pointer-events: none;
-  translate: 0 10px;
-}
-
-.playdock--dock {
+  translate: -50% 10px;
   transition:
     opacity 0.22s var(--ease-out),
     translate 0.22s var(--ease-out);
 }
 
-.playbtn {
-  position: static;
-  flex: 0 0 auto;
-  width: min(171px, 56cqw);
-  height: 54px;
-  padding: 17px 0;
-}
-
-.playbtn--dock {
+.playbtn--dock.is-on {
   opacity: 1;
   pointer-events: auto;
+  translate: -50% 0;
 }
 
 /* ---------- The 361x215 media block under the button ---------- */
 
 .media {
-  position: static;
-  flex: 0 0 auto;
-  width: 100%;
+  position: absolute;
+  left: 16px;
+  top: calc(549 * 100cqh / 852);
+  width: calc(100% - 32px);
   height: clamp(160px, calc(215 * 100cqh / 852), 240px);
   border-radius: var(--r-card);
   background: var(--white);
@@ -830,6 +817,7 @@
   border: none;
   padding: 0;
   display: block;
+  z-index: 3;
 }
 
 .media img {
@@ -870,6 +858,14 @@
 
 .navbar__tab--home {
   left: 0;
+}
+
+.navbar__tab--catalog {
+  left: 25%;
+}
+
+.navbar__tab--clubs {
+  left: 50%;
 }
 
 .navbar__tab--profile {
@@ -914,8 +910,10 @@
 
 .menu__xprow {
   display: flex;
+  align-items: stretch;
   gap: 12px;
-  height: 104px;
+  min-height: 104px;
+  height: auto;
   margin: 0 -16px;
   padding: 0 16px;
   overflow-x: auto;
@@ -933,12 +931,13 @@
   gap: 8px;
   flex: 0 0 144px;
   width: 144px;
-  height: 104px;
+  min-height: 104px;
+  height: auto;
   border-radius: var(--r-card-sm);
   background: var(--card);
   padding: 12px;
   text-align: left;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .xpcard:active,
@@ -965,38 +964,90 @@
 .xpcard__label {
   width: 100%;
   min-width: 0;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 16px;
-  letter-spacing: -1px;
+  letter-spacing: -0.4px;
   color: var(--ink);
+  overflow-wrap: anywhere;
 }
 
 .svctabs {
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 8px;
-  height: auto;
   width: 100%;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.svctabs::-webkit-scrollbar {
-  display: none;
 }
 
 .svctabs__item {
-  flex: 0 0 auto;
-  font-size: 16px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 20px;
-  letter-spacing: -1px;
+  line-height: 18px;
+  letter-spacing: -0.6px;
+  text-align: left;
   color: var(--ink-muted);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .svctabs__item--active {
   color: var(--ink);
+}
+
+.svctabs__panel {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.svctabs__card {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 85px;
+  padding: 12px;
+  border-radius: var(--r-card-sm);
+  background: var(--card);
+  text-align: left;
+}
+
+.svctabs__card strong {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.svctabs__card span,
+.svctabs__empty span {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--ink-muted);
+}
+
+.svctabs__empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 85px;
+  padding: 12px 16px;
+  border-radius: var(--r-card-sm);
+  background: var(--card);
+}
+
+.svctabs__empty p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
 }
 
 .promorow {
@@ -1020,11 +1071,9 @@
 
 .menu__profile {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
-  height: auto;
-  min-height: 44px;
+  height: 44px;
 }
 
 .menu__ava {
@@ -1227,14 +1276,9 @@
 /* Reward card: colour and ray motion come from the sticker theme. */
 .featured {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 4px;
   left: auto;
   width: 100%;
   height: 296px;
-  padding: 16px;
   border-radius: 24px;
   overflow: hidden;
   isolation: isolate;
@@ -1351,10 +1395,10 @@
 }
 
 .featured__name {
-  position: relative;
+  position: absolute;
+  left: 16px;
+  top: 214px;
   margin: 0;
-  width: 100%;
-  min-width: 0;
   font-size: 20px;
   font-weight: 500;
   line-height: 26px;
@@ -1363,10 +1407,11 @@
 }
 
 .featured__desc {
-  position: relative;
+  position: absolute;
+  left: 16px;
+  top: 240px;
+  width: 284px;
   margin: 0;
-  width: 100%;
-  min-width: 0;
   font-size: 15px;
   font-weight: 400;
   line-height: 20px;
@@ -1481,13 +1526,13 @@
     top: calc(300 * var(--v));
   }
 
-  .playdock {
-    top: calc(468 * var(--v));
-    gap: 10px;
+  .playbtn {
+    top: calc(468 * 100cqh / 852);
   }
 
   .media {
-    height: clamp(132px, calc(180 * var(--v)), 200px);
+    top: calc(528 * 100cqh / 852);
+    height: clamp(132px, calc(180 * 100cqh / 852), 200px);
   }
 
   .xpinfo__note {
@@ -1504,8 +1549,8 @@
     top: calc(286 * var(--v));
   }
 
-  .playdock {
-    top: calc(472 * var(--v));
+  .playbtn {
+    top: calc(472 * 100cqh / 852);
   }
 
   .pager--hub,
@@ -1541,11 +1586,6 @@
 }
 
 @container frame (max-width: 340px) {
-  .xpcard {
-    flex-basis: 128px;
-    width: 128px;
-  }
-
   .menu__title {
     font-size: 18px;
     letter-spacing: -1px;
