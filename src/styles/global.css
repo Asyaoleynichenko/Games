@@ -2,6 +2,7 @@
 @import './frames.css';
 @import './game.css';
 @import './screens.css';
+@import './tetris.css';
 @import './responsive.css';
 
 * {

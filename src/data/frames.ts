@@ -159,3 +159,29 @@ export const hubFrameFor: Record<string, FrameId> = {
   toast: 'hub-toast',
   lemon: 'hub-lemon',
 }
+
+export interface HardenedState {
+  id: string
+  node: string
+  label: string
+}
+
+/** Figma section 133:725 — HARDENED / Complete state map + mini-game. */
+export const hardenedStates: HardenedState[] = [
+  { id: 'hub-default', node: '133:726', label: 'Хаб — играть' },
+  { id: 'hub-menu', node: '133:768', label: 'Хаб — меню' },
+  { id: 'hub-loading', node: '133:919', label: 'Хаб — загрузка' },
+  { id: 'hub-offline', node: '133:1097', label: 'Хаб — нет сети' },
+  { id: 'hub-empty', node: '133:1280', label: 'Хаб — нет заданий' },
+  { id: 'rewards-grid', node: '133:1458', label: 'Награды — сетка' },
+  { id: 'rewards-detail', node: '133:1579', label: 'Награды — деталь' },
+  { id: 'tetris-tutorial', node: '133:1672', label: 'Тетрис — туториал' },
+  { id: 'tetris-playing', node: '133:1714', label: 'Тетрис — игра' },
+  { id: 'tetris-paused', node: '133:1756', label: 'Тетрис — пауза' },
+  { id: 'tetris-success', node: '133:1798', label: 'Тетрис — успех' },
+  { id: 'tetris-failure', node: '133:1840', label: 'Тетрис — проигрыш' },
+  { id: 'rewards-claim-error', node: '133:1882', label: 'Награда — ошибка' },
+  { id: 'hub-long', node: '133:2040', label: 'Хаб — длинный' },
+  { id: 'tetris-loading', node: '148:842', label: 'Тетрис — загрузка' },
+  { id: 'tetris-offline', node: '148:951', label: 'Тетрис — нет связи' },
+]

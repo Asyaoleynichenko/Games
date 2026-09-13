@@ -13,6 +13,13 @@ export const hubActions: HubAction[] = [
   { id: 'seven-days', xp: 30, label: 'Заходи 7 дней в приложение', target: 'streak' },
 ]
 
+/** Extra cards for Hub / Long content (133:2040). */
+export const hubActionsLong: HubAction[] = [
+  ...hubActions,
+  { id: 'review', xp: 15, label: 'Оставь отзыв на заказ', target: 'quest' },
+  { id: 'friend', xp: 25, label: 'Пригласи друга в игру', target: 'streak' },
+]
+
 export interface QuestProduct {
   id: string
   name: string

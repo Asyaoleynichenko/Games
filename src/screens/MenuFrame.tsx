@@ -9,7 +9,7 @@ import { useHub } from '../state/HubState'
  * with square corners and clears the nav at the bottom.
  */
 export function MenuFrame() {
-  const { goto, openSheet } = useHub()
+  const { goto, openSheet, openTetris } = useHub()
 
   return (
     <motion.div
@@ -26,7 +26,7 @@ export function MenuFrame() {
             floating={false}
             onAction={(target) => {
               if (target === 'quest') goto('quest')
-              else if (target === 'game') goto('play')
+              else if (target === 'game') openTetris('tutorial')
               else openSheet('streak')
             }}
           />

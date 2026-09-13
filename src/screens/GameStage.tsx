@@ -40,11 +40,18 @@ export function GameStage() {
     goto,
     openSheet,
     queueSticker,
+    hubPhase,
+    hubMenuOpen,
+    setHubPhase,
+    setHubMenuOpen,
+    openTetris,
   } = useHub()
 
   const { ref, fruitRef, progress, onScroll, onFruitScroll, jumpTo } = useThemePager()
   const curtainRef = useRef<HubCurtainHandle>(null)
-  const [curtainTop, setCurtainTop] = useState(HUB_SHEET)
+  const [curtainTop, setCurtainTop] = useState(
+    hubMenuOpen ? HUB_SHEET : HUB_SHEET_LOWERED,
+  )
   const [openId, setOpenId] = useState<string | null>(
     screen === 'awards' ? 'plus-50' : null,
   )
@@ -61,6 +68,10 @@ export function GameStage() {
     if (screen === 'awards') setOpenId('plus-50')
     if (screen === 'awards-grid') setOpenId(null)
   }, [screen])
+
+  useEffect(() => {
+    curtainRef.current?.snapTo(hubMenuOpen ? 'collapsed' : 'lowered')
+  }, [hubMenuOpen])
 
   const pickNeighbor = (id: string) => {
     const index = characters.findIndex((item) => item.id === id)
@@ -110,10 +121,15 @@ export function GameStage() {
           <div className="frame__canvas" style={{ minHeight: MENU_HEIGHT }}>
             <MenuSheet
               top={0}
+              phase={hubPhase}
+              onRetry={() => setHubPhase('ready')}
               onAction={(target) => {
                 if (target === 'quest') goto('quest')
-                else if (target === 'game') curtainRef.current?.snapTo('lowered')
-                else openSheet('streak')
+                else if (target === 'game') {
+                  setHubMenuOpen(false)
+                  curtainRef.current?.snapTo('lowered')
+                  openTetris('tutorial')
+                } else openSheet('streak')
               }}
             />
           </div>
@@ -147,6 +163,13 @@ export function GameStage() {
         <FloatingXp key={lastXpGain.at} amount={lastXpGain.amount} from="board" />
       )}
 
+      {mode === 'hub' && hubPhase === 'loading' && (
+        <div className="status-toast">Загружаем задания</div>
+      )}
+      {mode === 'hub' && hubPhase === 'offline' && (
+        <div className="status-toast">Нет сети</div>
+      )}
+
       <FrameHeader
         onRewards={() => {
           if (mode === 'awards') setOpenId(null)
@@ -157,10 +180,21 @@ export function GameStage() {
 
       <FrameNav
         onHome={() => {
-          if (mode === 'hub' && playRevealed) curtainRef.current?.snapTo('collapsed')
-          else goto('hub')
+          setHubPhase('ready')
+          if (mode === 'hub' && playRevealed) {
+            setHubMenuOpen(true)
+            curtainRef.current?.snapTo('collapsed')
+          } else {
+            setHubMenuOpen(false)
+            goto('hub')
+          }
         }}
-        onProfile={() => goto('menu')}
+        onProfile={() => {
+          if (mode === 'hub') {
+            setHubMenuOpen(true)
+            curtainRef.current?.snapTo('collapsed')
+          } else goto('menu')
+        }}
       />
     </div>
   )

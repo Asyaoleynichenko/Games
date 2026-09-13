@@ -32,8 +32,22 @@ export type ScreenId =
   | 'levelup'
   | 'newsticker'
   | 'customize'
+  | 'tetris'
 
-export type SheetId = 'streak' | { sticker: string } | null
+/** Hub sheet variants from Figma «HARDENED / Complete state map». */
+export type HubPhase = 'ready' | 'loading' | 'offline' | 'empty' | 'long'
+
+/** Full mini-game flow from the same Figma section. */
+export type TetrisPhase =
+  | 'tutorial'
+  | 'loading'
+  | 'playing'
+  | 'paused'
+  | 'success'
+  | 'failure'
+  | 'offline'
+
+export type SheetId = 'streak' | 'claim-error' | { sticker: string } | null
 
 export type CharacterMood =
   | 'idle'
@@ -67,6 +81,9 @@ interface State {
   mood: CharacterMood
   xpToNext: number
   progress: number
+  hubPhase: HubPhase
+  hubMenuOpen: boolean
+  tetrisPhase: TetrisPhase
 }
 
 interface Actions {
@@ -80,6 +97,10 @@ interface Actions {
   queueSticker: (id: string) => void
   claimReward: (id: string) => void
   resetDemo: () => void
+  setHubPhase: (phase: HubPhase) => void
+  setHubMenuOpen: (open: boolean) => void
+  setTetrisPhase: (phase: TetrisPhase) => void
+  openTetris: (phase?: TetrisPhase) => void
 }
 
 const Ctx = createContext<(State & Actions) | null>(null)
@@ -103,6 +124,9 @@ export function HubProvider({ children }: { children: ReactNode }) {
     null,
   )
   const [moodPulse, setMoodPulse] = useState<CharacterMood | null>(null)
+  const [hubPhase, setHubPhase] = useState<HubPhase>('ready')
+  const [hubMenuOpen, setHubMenuOpen] = useState(false)
+  const [tetrisPhase, setTetrisPhase] = useState<TetrisPhase>('tutorial')
 
   useEffect(() => {
     if (!lastXpGain) return
@@ -114,6 +138,12 @@ export function HubProvider({ children }: { children: ReactNode }) {
   const goto = useCallback((next: ScreenId) => {
     setSheet(null)
     setScreen(next)
+  }, [])
+
+  const openTetris = useCallback((phase: TetrisPhase = 'tutorial') => {
+    setSheet(null)
+    setTetrisPhase(phase)
+    setScreen('tetris')
   }, [])
 
   const openSheet = useCallback((next: SheetId) => setSheet(next), [])
@@ -180,6 +210,9 @@ export function HubProvider({ children }: { children: ReactNode }) {
     setLastXpGain(null)
     setMoodPulse(null)
     setSheet(null)
+    setHubPhase('ready')
+    setHubMenuOpen(false)
+    setTetrisPhase('tutorial')
     setScreen('hub')
   }, [])
 
@@ -191,7 +224,9 @@ export function HubProvider({ children }: { children: ReactNode }) {
         : pendingLevelUp
           ? 'excited'
           : (moodPulse ??
-            (screen === 'play' || screen === 'play-alt' ? 'playing' : 'idle'))
+            (screen === 'play' || screen === 'play-alt' || screen === 'tetris'
+              ? 'playing'
+              : 'idle'))
 
   const value = useMemo(
     () => ({
@@ -213,6 +248,9 @@ export function HubProvider({ children }: { children: ReactNode }) {
       mood,
       xpToNext: Math.max(0, xpMax - xp),
       progress: Math.min(1, xp / xpMax),
+      hubPhase,
+      hubMenuOpen,
+      tetrisPhase,
       goto,
       openSheet,
       closeSheet,
@@ -223,6 +261,10 @@ export function HubProvider({ children }: { children: ReactNode }) {
       queueSticker,
       claimReward,
       resetDemo,
+      setHubPhase,
+      setHubMenuOpen,
+      setTetrisPhase,
+      openTetris,
     }),
     [
       screen,
@@ -241,6 +283,9 @@ export function HubProvider({ children }: { children: ReactNode }) {
       lastPlaced,
       lastXpGain,
       mood,
+      hubPhase,
+      hubMenuOpen,
+      tetrisPhase,
       goto,
       openSheet,
       closeSheet,
@@ -250,6 +295,10 @@ export function HubProvider({ children }: { children: ReactNode }) {
       queueSticker,
       claimReward,
       resetDemo,
+      setHubPhase,
+      setHubMenuOpen,
+      setTetrisPhase,
+      openTetris,
     ],
   )
 

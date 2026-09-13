@@ -28,7 +28,7 @@ export function PlayDock({
   docked?: boolean
   revealed?: boolean
 }) {
-  const { addXp } = useHub()
+  const { addXp, openTetris } = useHub()
   const [seeds, setSeeds] = useState([1, 1, 1])
   const [drops, setDrops] = useState(0)
   const [tetrisDrops, setTetrisDrops] = useState(0)
@@ -39,17 +39,14 @@ export function PlayDock({
   const score = () => addXp(ROUND_XP)
 
   const play = () => {
-    if (current.id === 'toast') {
-      setDrops((count) => count + 1)
-      return
+    openTetris('tutorial')
+    if (current.id === 'toast') setDrops((count) => count + 1)
+    else if (current.id === 'lemon') setTetrisDrops((count) => count + 1)
+    else {
+      setSeeds((list) =>
+        list.map((value, index) => (index === active ? value + 1 : value)),
+      )
     }
-    if (current.id === 'lemon') {
-      setTetrisDrops((count) => count + 1)
-      return
-    }
-    setSeeds((list) =>
-      list.map((value, index) => (index === active ? value + 1 : value)),
-    )
   }
 
   return (

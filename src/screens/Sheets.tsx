@@ -56,6 +56,34 @@ export function StreakSheet() {
   )
 }
 
+/** Rewards / Claim error — Figma 133:1882. */
+export function ClaimErrorSheet() {
+  const { closeSheet, goto } = useHub()
+
+  return (
+    <BottomSheet onClose={closeSheet}>
+      <div className="claim-error">
+        <h2>Награду не удалось забрать</h2>
+        <p>
+          Похоже, сеть моргнула. Прогресс раунда на месте — попробуй ещё раз.
+        </p>
+        <Cta
+          block
+          onClick={() => {
+            closeSheet()
+            goto('awards')
+          }}
+        >
+          Повторить
+        </Cta>
+        <Cta block variant="white" onClick={closeSheet}>
+          Закрыть
+        </Cta>
+      </div>
+    </BottomSheet>
+  )
+}
+
 /** Sticker detail, opened from the collection grid. */
 export function StickerSheet({ stickerId }: { stickerId: string }) {
   const { closeSheet, placed, queueSticker, goto } = useHub()

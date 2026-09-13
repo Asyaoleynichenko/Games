@@ -1,5 +1,12 @@
 import { ui } from '../../assets'
-import { hubActions, menuLinks, menuTiles, serviceTabs } from '../../data/quests'
+import {
+  hubActions,
+  hubActionsLong,
+  menuLinks,
+  menuTiles,
+  serviceTabs,
+} from '../../data/quests'
+import type { HubPhase } from '../../state/HubState'
 
 /**
  * Menu 25:4917 — 393×1020, auto-layout column, pad 20/16, gap 20.
@@ -27,10 +34,20 @@ function MoreDots() {
 export interface MenuSheetProps {
   top: number
   floating?: boolean
+  phase?: HubPhase
   onAction: (target: 'quest' | 'game' | 'streak') => void
+  onRetry?: () => void
 }
 
-export function MenuSheet({ top, floating = true, onAction }: MenuSheetProps) {
+export function MenuSheet({
+  top,
+  floating = true,
+  phase = 'ready',
+  onAction,
+  onRetry,
+}: MenuSheetProps) {
+  const actions = phase === 'long' ? hubActionsLong : hubActions
+
   return (
     <div
       className={`menu${floating ? '' : ' menu--flush'}`}
@@ -38,18 +55,37 @@ export function MenuSheet({ top, floating = true, onAction }: MenuSheetProps) {
     >
       <section className="menu__gain">
         <h2 className="menu__title">Как получить больше</h2>
-        <div className="menu__xprow">
-          {hubActions.map((action) => (
-            <button
-              key={action.id}
-              className="xpcard"
-              onClick={() => onAction(action.target)}
-            >
-              <span className="xpcard__amount">+{action.xp}&nbsp;xp</span>
-              <span className="xpcard__label">{action.label}</span>
+        {phase === 'empty' ? (
+          <div className="menu__empty">
+            <div className="menu__empty-mark" aria-hidden />
+            <h3>Пока нет заданий</h3>
+            <p>Загляни позже — тут появятся новые способы получить XP</p>
+            <button className="cta cta--sm" type="button" onClick={onRetry}>
+              Обновить
             </button>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className={`menu__xprow${phase === 'long' ? ' menu__xprow--wrap' : ''}`}>
+            {(phase === 'loading' ? Array.from({ length: 4 }) : actions).map((action, index) => {
+              if (phase === 'loading') {
+                return <div key={index} className="xpcard xpcard--skel" />
+              }
+              const card = action as (typeof actions)[number]
+              return (
+                <button
+                  key={card.id}
+                  className="xpcard"
+                  onClick={() => (phase === 'offline' ? onRetry?.() : onAction(card.target))}
+                >
+                  <span className="xpcard__amount">+{card.xp}&nbsp;xp</span>
+                  <span className="xpcard__label">
+                    {phase === 'offline' ? 'Повторить' : card.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       <section className="menu__tabsblock">

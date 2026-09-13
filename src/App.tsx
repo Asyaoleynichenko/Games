@@ -7,7 +7,8 @@ import { MenuFrame } from './screens/MenuFrame'
 import { NewStickerScreen } from './screens/NewStickerScreen'
 import { PlayScreen } from './screens/PlayScreen'
 import { QuestScreen } from './screens/QuestScreen'
-import { StickerSheet, StreakSheet } from './screens/Sheets'
+import { ClaimErrorSheet, StickerSheet, StreakSheet } from './screens/Sheets'
+import { TetrisScreen } from './screens/TetrisScreen'
 import { DemoRail } from './DemoRail'
 import { HubProvider, useHub, type ScreenId } from './state/HubState'
 
@@ -17,6 +18,7 @@ const extras: Partial<Record<ScreenId, () => JSX.Element>> = {
   levelup: LevelUpScreen,
   newsticker: NewStickerScreen,
   customize: CustomizeScreen,
+  tetris: TetrisScreen,
 }
 
 const FRAME_W = 393
@@ -79,6 +81,7 @@ function Device() {
 
           <AnimatePresence>
             {sheet === 'streak' && <StreakSheet key="streak" />}
+            {sheet === 'claim-error' && <ClaimErrorSheet key="claim-error" />}
             {sheet && typeof sheet === 'object' && (
               <StickerSheet key={sheet.sticker} stickerId={sheet.sticker} />
             )}
