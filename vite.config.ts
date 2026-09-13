@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // Project site: https://asyaoleynichenko.github.io/Games/
-  base: '/Games/',
+  // Project Pages URL is /Games/; keep `/` locally so `npm run dev` still works.
+  base: process.env.GITHUB_ACTIONS ? '/Games/' : '/',
   server: {
     port: 5180,
     // `::` is dual-stack on macOS/Node, so both localhost ([::1]) and
