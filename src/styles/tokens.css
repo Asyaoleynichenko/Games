@@ -52,6 +52,7 @@
   --frame-w: 393px;
   --frame-h: 852px;
   --nav-h: 73px;
+  --nav-bar: calc(var(--nav-h) + var(--safe-b));
   --device-w: var(--frame-w);
   --device-h: var(--frame-h);
   --fit: 1;

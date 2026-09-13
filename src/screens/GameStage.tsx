@@ -142,7 +142,7 @@ export function GameStage() {
       {mode === 'awards' && (
         <div
           className="frame__scroll frame__scroll--glass frame__scroll--awards"
-          style={{ bottom: 'var(--nav-h)' }}
+          style={{ bottom: 'var(--nav-bar)' }}
         >
           <div className="frame__canvas" style={{ minHeight: canvasHeight }}>
             <section className="awards-sheet" style={{ top: 0 }}>

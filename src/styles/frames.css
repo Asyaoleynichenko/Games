@@ -143,7 +143,7 @@
   left: 0;
   top: 0;
   width: 100%;
-  height: calc(100% - var(--nav-h));
+  height: calc(100% - var(--nav-bar));
   z-index: 1;
 }
 
@@ -260,7 +260,7 @@
   left: 0;
   right: 0;
   top: 0;
-  bottom: var(--nav-h);
+  bottom: var(--nav-bar);
   z-index: 4;
   overflow-y: auto;
   overflow-x: hidden;
@@ -506,7 +506,7 @@
 
 .hpill {
   position: absolute;
-  top: max(12px, calc(16 * var(--v)));
+  top: max(12px, calc(16 * var(--v)), var(--safe-t));
   width: clamp(34px, calc(38 * var(--u)), 38px);
   height: clamp(34px, calc(38 * var(--u)), 38px);
   padding: 8px;
@@ -836,7 +836,8 @@
   top: auto;
   bottom: 0;
   width: 100%;
-  height: var(--nav-h);
+  height: var(--nav-bar);
+  padding-bottom: var(--safe-b);
   z-index: 8;
   background: var(--white);
 }
