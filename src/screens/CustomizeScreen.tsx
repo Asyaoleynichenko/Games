@@ -44,10 +44,10 @@ export function CustomizeScreen() {
             {isPlaced ? 'Твой персонаж' : 'Новый стикер'}
           </span>
 
-          <div style={{ position: 'relative', marginTop: 12 }}>
+          <div className="screen-hero screen-hero--lg" style={{ marginTop: 12 }}>
             <CharacterHero
               character={character}
-              size={344}
+              size={280}
               placed={placed}
               accessories={accessories}
               animateIds={justPlaced ? [justPlaced] : []}

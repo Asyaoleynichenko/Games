@@ -22,6 +22,19 @@ const HUB_SHEET = 482
 const HUB_SHEET_EXPANDED = 56
 /** ~56px of sheet above the nav so the lowered curtain can be grabbed. */
 const HUB_SHEET_LOWERED = 724
+const NAV_DESIGN = 73
+
+function collapsedTopFor(frameH: number) {
+  const nav = NAV_DESIGN
+  const v = frameH / 852
+  const s = Math.min(1, (frameH / 852) * 1.25)
+  const xpTop =
+    frameH <= 568 ? 220 : frameH <= 640 ? 240 : frameH <= 700 ? 255 : frameH <= 740 ? 270 : 341
+  const belowXp = xpTop * v + 122 * s + 8
+  const peek = frameH < 740 ? 276 : 324
+  const topPx = Math.max(belowXp, frameH - nav - peek)
+  return Math.round((Math.max(88, Math.min(topPx, frameH * 0.58)) / frameH) * 852)
+}
 
 /**
  * Hub and awards. Play preview lives behind the curtain — drag the sheet
@@ -59,10 +72,11 @@ export function GameStage() {
     screen === 'awards' ? 'plus-50' : null,
   )
   const [compactLand, setCompactLand] = useState(false)
+  const [collapsedTop, setCollapsedTop] = useState(HUB_SHEET)
 
   const mode = screen === 'awards' || screen === 'awards-grid' ? 'awards' : 'hub'
   const reveal =
-    (curtainTop - HUB_SHEET) / Math.max(1, HUB_SHEET_LOWERED - HUB_SHEET)
+    (curtainTop - collapsedTop) / Math.max(1, HUB_SHEET_LOWERED - collapsedTop)
   const playRevealed = reveal > 0.18
   const playLive = reveal > 0.55
 
@@ -83,6 +97,16 @@ export function GameStage() {
     sync()
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    const frame = document.querySelector('.frame')
+    if (!frame) return
+    const apply = () => setCollapsedTop(collapsedTopFor(frame.clientHeight || 852))
+    apply()
+    const observer = new ResizeObserver(apply)
+    observer.observe(frame)
+    return () => observer.disconnect()
   }, [])
 
   const openGame = (id?: string) => {
@@ -128,7 +152,7 @@ export function GameStage() {
       {mode === 'hub' && (
         <HubCurtain
           ref={curtainRef}
-          collapsedTop={HUB_SHEET}
+          collapsedTop={collapsedTop}
           expandedTop={HUB_SHEET_EXPANDED}
           loweredTop={HUB_SHEET_LOWERED}
           stop={hubSheet}

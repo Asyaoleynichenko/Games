@@ -55,7 +55,7 @@ export function LevelUpScreen() {
             <Sparkles count={14} radius={148} />
             <CharacterHero
               character={character}
-              size={356}
+              size={280}
               placed={placed}
               accessories={accessories}
               mood="levelup"

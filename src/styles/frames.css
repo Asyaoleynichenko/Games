@@ -513,7 +513,7 @@
 
 .hpill {
   position: absolute;
-  top: max(12px, calc(16 * var(--v)), var(--safe-t));
+  top: calc(10px + var(--safe-t));
   width: clamp(34px, calc(38 * var(--u)), 38px);
   height: clamp(34px, calc(38 * var(--u)), 38px);
   padding: 8px;
@@ -1580,13 +1580,25 @@
 }
 
 
+@container frame (max-height: 860px) {
+  .menu {
+    gap: 14px;
+    padding-top: 12px;
+  }
+
+  .menu__xprow,
+  .xpcard {
+    min-height: 96px;
+  }
+}
+
 @container frame (max-height: 740px) {
   .hpill {
-    top: max(8px, var(--safe-t));
+    top: calc(10px + var(--safe-t));
   }
 
   .xpinfo {
-    top: calc(318 * var(--v));
+    top: calc(270 * var(--v));
   }
 
   .playbtn {
@@ -1599,13 +1611,47 @@
   }
 
   .pager-dots {
-    top: calc(300 * var(--v));
+    top: calc(250 * var(--v));
+  }
+
+  .frame__scroll--awards {
+    top: calc(220 * 100cqh / 852);
+  }
+
+  .featured {
+    height: auto;
+    min-height: 168px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 16px;
+    padding-top: 108px;
+  }
+
+  .featured__art {
+    top: 4px;
+    width: min(168px, 28cqh);
+    height: auto;
+    max-height: 140px;
+  }
+
+  .featured__name,
+  .featured__desc {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+  }
+
+  .featured__desc {
+    margin-top: 2px;
   }
 }
 
 @container frame (max-height: 700px) {
   .xpinfo {
-    top: calc(300 * var(--v));
+    top: calc(255 * var(--v));
   }
 
   .playbtn {
@@ -1622,13 +1668,49 @@
   }
 
   .pager-dots {
-    top: calc(292 * var(--v));
+    top: calc(236 * var(--v));
+  }
+
+  .menu {
+    gap: 10px;
+    padding-top: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .menu__xprow,
+  .xpcard {
+    min-height: 84px;
+  }
+
+  .xpcard {
+    padding: 10px;
+  }
+
+  .xpcard__amount {
+    font-size: 22px;
+    line-height: 24px;
+  }
+
+  .svctabs {
+    padding-top: 4px;
+    padding-bottom: 8px;
+  }
+
+  .promorow,
+  .promorow img {
+    height: 72px;
+  }
+
+  .promorow img {
+    width: auto;
+    max-width: none;
   }
 }
 
 @container frame (max-height: 640px) {
   .xpinfo {
-    top: calc(286 * var(--v));
+    top: calc(240 * var(--v));
   }
 
   .playbtn {
@@ -1654,7 +1736,7 @@
 
 @container frame (max-height: 568px) {
   .xpinfo {
-    top: calc(268 * var(--v));
+    top: calc(220 * var(--v));
   }
 
   .pager--hub,

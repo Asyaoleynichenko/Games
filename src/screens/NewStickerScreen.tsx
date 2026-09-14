@@ -32,7 +32,7 @@ export function NewStickerScreen() {
             Новый стикер!
           </motion.span>
 
-          <div style={{ position: 'relative', marginTop: 32 }}>
+          <div className="screen-hero screen-hero--sticker" style={{ marginTop: 24 }}>
             <Sparkles count={12} radius={130} />
             <motion.div
               layoutId={`place-${id}`}
@@ -44,7 +44,7 @@ export function NewStickerScreen() {
                 animate={{ rotate: [-5, -1, -5], y: [0, -8, 0] }}
                 transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <StickerImage id={id} size={230} />
+                <StickerImage id={id} size="100%" />
               </motion.div>
             </motion.div>
           </div>

@@ -9,7 +9,7 @@
 }
 
 .screen__scroll {
-  padding: clamp(48px, 7cqh, 60px) 0 var(--nav-bar);
+  padding: clamp(36px, 6cqh, 60px) 0 8px;
 }
 
 .screen__scroll:has(.sheet--fill) {
@@ -36,7 +36,11 @@
 }
 
 .screen-hero--lg {
-  width: min(100%, 421px);
+  width: min(100%, 360px, 34cqh);
+}
+
+.screen-hero--sticker {
+  width: min(220px, 34cqh, 62cqw);
 }
 
 .screen-progress {
@@ -47,10 +51,19 @@
 
 .screen-actions {
   width: 100%;
-  padding: clamp(16px, 4cqh, 32px) clamp(16px, 6cqw, 24px);
+  margin-top: auto;
+  padding: 8px clamp(16px, 6cqw, 24px) 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 6;
+}
+
+.sheet-cta {
+  margin-top: auto;
+  padding-top: 12px;
 }
 
 .screen-kicker {
@@ -271,6 +284,22 @@
   .screen-stack--grow {
     justify-content: flex-start;
   }
+
+  .screen-hero {
+    width: min(100%, 148px, 22cqh);
+  }
+
+  .progress-block {
+    gap: 6px;
+  }
+
+  .quest-grid {
+    margin-top: 8px;
+  }
+
+  .quest-cell {
+    padding: 8px 4px 6px;
+  }
 }
 
 @container (max-height: 640px) {
@@ -284,7 +313,7 @@
   }
 
   .screen-hero--lg {
-    width: min(100%, 300px);
+    width: min(100%, 280px, 32cqh);
   }
 }
 

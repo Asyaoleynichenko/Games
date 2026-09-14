@@ -1,5 +1,5 @@
 import { AnimatePresence, LayoutGroup } from 'framer-motion'
-import { useLayoutEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { CustomizeScreen } from './screens/CustomizeScreen'
 import { GameStage } from './screens/GameStage'
 import { LevelUpScreen } from './screens/LevelUpScreen'
@@ -29,12 +29,40 @@ const extras: Partial<Record<ScreenId, () => JSX.Element>> = {
 
 const FRAME_W = 393
 const FRAME_H = 852
+const THEME_COLORS = ['#9747ff', '#ff47fc', '#ff9d00']
 
 function scaleCap() {
   if (window.matchMedia('(min-width: 1600px) and (min-height: 800px)').matches) return 1.5
   if (window.matchMedia('(min-width: 1280px) and (min-height: 700px)').matches) return 1.35
   if (window.matchMedia('(min-width: 1100px) and (min-height: 700px)').matches) return 1.25
   return Number.POSITIVE_INFINITY
+}
+
+/** Pins the shell to the visible viewport (iOS Chrome toolbars, keyboard). */
+function useVisualViewport() {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const apply = () => {
+      const vv = window.visualViewport
+      const width = Math.max(1, Math.round(vv?.width ?? window.innerWidth))
+      const height = Math.max(1, Math.round(vv?.height ?? window.innerHeight))
+      root.style.setProperty('--vvw', `${width}px`)
+      root.style.setProperty('--vvh', `${height}px`)
+      root.style.setProperty('--vvx', `${Math.round(vv?.offsetLeft ?? 0)}px`)
+      root.style.setProperty('--vvy', `${Math.round(vv?.offsetTop ?? 0)}px`)
+    }
+    apply()
+    window.visualViewport?.addEventListener('resize', apply)
+    window.visualViewport?.addEventListener('scroll', apply)
+    window.addEventListener('resize', apply)
+    window.addEventListener('orientationchange', apply)
+    return () => {
+      window.visualViewport?.removeEventListener('resize', apply)
+      window.visualViewport?.removeEventListener('scroll', apply)
+      window.removeEventListener('resize', apply)
+      window.removeEventListener('orientationchange', apply)
+    }
+  }, [])
 }
 
 /** Fits the 393×852 artboard into the slot; CSS --fit is the first-paint fallback. */
@@ -83,10 +111,24 @@ function DeviceSlot({ children }: { children: ReactNode }) {
 }
 
 function Device() {
-  const { screen, sheet } = useHub()
+  const { screen, sheet, characterIndex } = useHub()
   const Extra = extras[screen]
   const showHub = screen === 'hub' || screen === 'awards' || screen === 'awards-grid'
   const showPlay = screen === 'play' || screen === 'play-alt'
+
+  useEffect(() => {
+    const color = THEME_COLORS[characterIndex] ?? THEME_COLORS[0]
+    document.documentElement.style.background = color
+    document.body.style.background = color
+    document.documentElement.style.setProperty('--theme-base', color)
+    let meta = document.querySelector('meta[name="theme-color"]')
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.setAttribute('name', 'theme-color')
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute('content', color)
+  }, [characterIndex])
 
   return (
     <LayoutGroup>
@@ -111,15 +153,22 @@ function Device() {
   )
 }
 
+function Shell() {
+  useVisualViewport()
+  return (
+    <div className="stage">
+      <DeviceSlot>
+        <Device />
+      </DeviceSlot>
+      <DemoRail />
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <HubProvider>
-      <div className="stage">
-        <DeviceSlot>
-          <Device />
-        </DeviceSlot>
-        <DemoRail />
-      </div>
+      <Shell />
     </HubProvider>
   )
 }

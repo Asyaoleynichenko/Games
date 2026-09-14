@@ -125,9 +125,9 @@ export function BottomSheet({
   return (
     <motion.div
       className="overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, pointerEvents: 'auto' }}
+      animate={{ opacity: 1, pointerEvents: 'auto' }}
+      exit={{ opacity: 0, pointerEvents: 'none' }}
       transition={{ duration: 0.2 }}
       onClick={onClose}
     >

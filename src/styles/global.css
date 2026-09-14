@@ -16,11 +16,11 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-  height: 100dvh;
-  min-height: 100svh;
+  height: 100svh;
+  height: var(--vvh, 100svh);
   font-family: var(--font);
   color: var(--ink);
-  background: #000;
+  background: var(--theme-base, #9747ff);
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
@@ -30,8 +30,8 @@ body {
 #root {
   width: 100%;
   height: 100%;
-  height: 100dvh;
-  min-height: 100svh;
+  height: 100svh;
+  height: var(--vvh, 100svh);
 }
 
 button {
@@ -58,12 +58,14 @@ img {
   flex-direction: column;
   overflow: hidden;
   isolation: isolate;
+  padding-bottom: var(--nav-bar);
 }
 
 .screen__scroll {
   position: relative;
   z-index: 1;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -79,6 +81,11 @@ img {
    further down the column squashes the blocks above it. */
 .screen__scroll > * {
   flex-shrink: 0;
+}
+
+.screen__scroll > .screen-stack--grow {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 /* ---------- Status bar ---------- */
@@ -204,8 +211,11 @@ img {
   flex: 1 1 auto;
   margin-top: 16px;
   margin-bottom: 0;
-  padding-bottom: calc(20px + var(--nav-bar));
+  padding-bottom: 20px;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .section-title {
@@ -302,6 +312,7 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  pointer-events: auto;
 }
 
 .bottomsheet {

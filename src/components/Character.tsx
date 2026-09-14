@@ -31,7 +31,7 @@ export function StickerImage({
   locked = false,
 }: {
   id: string
-  size: number
+  size: number | string
   locked?: boolean
 }) {
   const art = stickerArt[id]
@@ -43,6 +43,7 @@ export function StickerImage({
       alt={sticker?.title ?? ''}
       style={{
         width: size,
+        maxWidth: '100%',
         height: 'auto',
         display: 'block',
         filter: locked
@@ -102,13 +103,19 @@ export function CharacterHero({
     resolved === 'levelup' ||
     resolved === 'reward'
 
+  const stickerPct = (stickerSize / box) * 100
+
   return (
     <motion.div
+      className="hero-body"
       layoutId={shared ? `hero-body-${character.id}` : undefined}
       style={{
         position: 'relative',
-        width: box,
-        height: box,
+        width: '100%',
+        maxWidth: box,
+        aspectRatio: '1 / 1',
+        height: 'auto',
+        margin: '0 auto',
         zIndex: 1,
         filter: 'none',
       }}
@@ -116,7 +123,11 @@ export function CharacterHero({
       transition={frozen ? { duration: 0 } : moodTransition[resolved]}
     >
       {sparkle && !reduced && <Sparkles count={10} radius={box * 0.42} />}
-      <img src={character.art} alt={character.name} width={box} height={box} />
+      <img
+        src={character.art}
+        alt={character.name}
+        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+      />
 
       <AnimatePresence>
         {accessories.includes('glasses') && (
@@ -171,7 +182,7 @@ export function CharacterHero({
             }
           >
             <div style={{ position: 'relative' }}>
-              <StickerImage id={id} size={stickerSize} />
+              <StickerImage id={id} size={`${stickerPct}%`} />
               {highlight === id && (
                 <motion.span
                   style={{

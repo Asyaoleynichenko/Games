@@ -144,7 +144,7 @@ export function QuestScreen() {
                 </div>
               </div>
 
-              <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+              <div className="sheet-cta">
                 {phase === 'progress' ? (
                   <Cta block onClick={() => setPhase('complete')}>
                     Собрать корзину
@@ -185,9 +185,11 @@ export function QuestScreen() {
               <p style={{ margin: '12px 0 20px', fontSize: 15, color: 'var(--ink-muted)' }}>
                 Твой персонаж растёт! 🍋
               </p>
-              <Cta block onClick={() => goto(pendingLevelUp ? 'levelup' : 'hub')}>
-                На главную
-              </Cta>
+              <div className="sheet-cta">
+                <Cta block onClick={() => goto(pendingLevelUp ? 'levelup' : 'hub')}>
+                  На главную
+                </Cta>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

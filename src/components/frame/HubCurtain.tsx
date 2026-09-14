@@ -149,6 +149,12 @@ export const HubCurtain = forwardRef<
   }, [top, onTop])
 
   useEffect(() => {
+    const next =
+      stop === 'expanded' ? expandedTop : stop === 'lowered' ? floor : collapsedTop
+    if (Math.abs(topRef.current - next) > 2) applyTop(next)
+  }, [applyTop, collapsedTop, expandedTop, floor, stop])
+
+  useEffect(() => {
     const panel = panelRef.current
     const pull = pullRef.current
     if (!panel) return
