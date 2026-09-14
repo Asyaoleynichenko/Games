@@ -257,6 +257,12 @@
   }
 }
 
+@container (max-height: 740px) {
+  .screen__scroll {
+    padding-top: clamp(36px, 6cqh, 52px);
+  }
+}
+
 @container (max-height: 700px) {
   .screen__scroll {
     padding-top: 44px;
@@ -282,6 +288,32 @@
   }
 }
 
+@container (max-height: 540px) {
+  .screen__scroll {
+    padding-top: 20px;
+    padding-bottom: 12px;
+  }
+
+  .screen-hero,
+  .screen-hero--lg {
+    width: min(100%, 220px);
+  }
+
+  .screen-actions {
+    padding: 8px 16px 12px;
+  }
+
+  .screen-title {
+    font-size: 18px;
+  }
+}
+
+@container (min-height: 880px) {
+  .screen__scroll {
+    padding-top: clamp(56px, 8cqh, 72px);
+  }
+}
+
 @container (max-width: 340px) {
   .quest-grid {
     gap: 6px;
@@ -301,5 +333,22 @@
 
   .progress-pill {
     height: 34px;
+  }
+}
+
+@container (max-height: 540px) and (min-width: 500px) {
+  .screen__scroll {
+    padding: 16px 20px 12px;
+  }
+
+  .screen-stack--grow {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .screen-hero,
+  .screen-hero--lg {
+    width: min(42%, 280px);
   }
 }

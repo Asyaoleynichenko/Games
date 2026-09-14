@@ -1,15 +1,15 @@
 /*
   Adaptive shell + fluid bits around the 393×852 Figma artboard.
 
-  The product UI stays in design pixels inside .device__artboard. This file
-  fits that canvas into the viewport, switches chrome (bezel / rail / padding)
-  at breakpoints, and lets a few inner blocks breathe with the frame width.
+  Phone portrait: the product UI is full-bleed and reflows with --u/--v/--s.
+  Tablet / desktop: the 393×852 canvas is contain-fit into a handset bezel.
+  Landscape phones: full-bleed; inner layout switches to two columns.
 
   Lives in an @import, so all shell rules must stay here — later rules in
   global.css would otherwise override these breakpoints.
 */
 
-/* ---------- Phone: full-bleed, no bezel, rail off ---------- */
+/* ---------- Phone portrait: full-bleed, no bezel, rail off ---------- */
 
 .stage {
   width: 100%;
@@ -71,15 +71,32 @@
   display: none;
 }
 
-@media (max-height: 667px) and (orientation: portrait) {
+/* iPhone SE / compact Androids — keep the stage black, no fake bezel */
+@media (max-width: 389.98px), (max-height: 700px) and (orientation: portrait) {
   .stage {
     background: #0b0910;
   }
 }
 
-/* ---------- Tablet: centered 393×852 handset, soft bezel, no review rail ---------- */
+/* Very small phones (320–359) */
+@media (max-width: 359.98px) {
+  .menu__xprow,
+  .promorow {
+    gap: 8px;
+  }
+}
 
-@media (min-width: 600px) and (max-width: 959.98px) {
+/* ---------- Large phones (Pro Max / Pixel XL): still edge-to-edge ---------- */
+
+@media (min-width: 430px) and (max-width: 599.98px) and (orientation: portrait) {
+  .device-slot {
+    padding: 0;
+  }
+}
+
+/* ---------- Tablet portrait: centered 393×852 handset, soft bezel ---------- */
+
+@media (min-width: 600px) and (max-width: 1099.98px) and (orientation: portrait) {
   .stage {
     padding: 16px;
     padding-top: max(16px, var(--safe-t));
@@ -103,9 +120,39 @@
   }
 }
 
+/* ---------- iPad landscape / small laptops: handset, no review rail ---------- */
+
+@media (min-width: 600px) and (max-width: 1099.98px) and (orientation: landscape) and (min-height: 600px) {
+  .stage {
+    padding: 12px;
+    padding-top: max(12px, var(--safe-t));
+    padding-bottom: max(12px, var(--safe-b));
+    background: radial-gradient(60% 50% at 50% 0%, #2b2438 0%, #15121c 72%);
+  }
+
+  .device-slot {
+    --fit: min(100cqi / var(--frame-w), 100cqb / var(--frame-h));
+    padding: 0;
+    overflow: visible;
+  }
+
+  .device {
+    width: calc(var(--frame-w) * var(--fit));
+    height: calc(var(--frame-h) * var(--fit));
+    border-radius: 28px;
+    box-shadow:
+      0 0 0 6px #0b0910,
+      0 18px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  .demo-rail {
+    display: none;
+  }
+}
+
 /* ---------- Desktop: handset + demo rail ---------- */
 
-@media (min-width: 960px) {
+@media (min-width: 1100px) and (min-height: 700px) {
   .stage {
     gap: 24px;
     padding: 24px 20px;
@@ -151,7 +198,7 @@
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1280px) and (min-height: 700px) {
   :root {
     --scale-max: 1.35;
   }
@@ -167,13 +214,13 @@
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1600px) and (min-height: 800px) {
   :root {
     --scale-max: 1.5;
   }
 }
 
-/* ---------- Landscape phones: fit height, keep the board usable ---------- */
+/* ---------- Landscape phones: full-bleed, inner layout reflows ---------- */
 
 @media (orientation: landscape) and (max-height: 599.98px) {
   .stage {
@@ -205,19 +252,6 @@
   }
 }
 
-/* ---------- Wide landscape tablets: handset + rail if there is room ---------- */
-
-@media (orientation: landscape) and (min-height: 600px) and (max-width: 959.98px) {
-  .stage {
-    padding: 12px;
-    background: radial-gradient(60% 50% at 50% 0%, #2b2438 0%, #15121c 72%);
-  }
-
-  .device {
-    border-radius: 28px;
-  }
-}
-
 /* ---------- Hover vs coarse pointers ---------- */
 
 @media (hover: hover) and (pointer: fine) {
@@ -240,8 +274,6 @@
     min-height: 38px;
   }
 }
-
-/* ---------- Reduced data / motion already handled in frames.css ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .device,
@@ -352,22 +384,8 @@
   text-overflow: ellipsis;
 }
 
-/* Extra-loop screens inherit the live frame size */
 .screen-hero img,
 .screen-hero--lg img {
   max-width: 100%;
   height: auto;
-}
-
-@media (max-width: 359.98px) {
-  .menu__xprow,
-  .promorow {
-    gap: 8px;
-  }
-}
-
-@media (orientation: landscape) and (max-height: 599.98px) {
-  .media {
-    height: clamp(120px, 28cqh, 180px);
-  }
 }

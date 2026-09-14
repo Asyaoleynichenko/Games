@@ -35,23 +35,35 @@ export function CharacterStage({
   const tap = useRef({ x: 0, scroll: 0 })
   const progressRef = useRef(progress)
   const rootRef = useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = useState({ sx: 1, sy: 1, slide: FRUIT_SLIDE })
+  const [metrics, setMetrics] = useState({ sx: 1, sy: 1, ss: 1, slide: FRUIT_SLIDE })
   progressRef.current = progress
 
   useLayoutEffect(() => {
     const root = rootRef.current
     if (!root) return
     const apply = () => {
+      const w = root.clientWidth || PAGE_W
       const frame = root.closest('.frame') as HTMLElement | null
-      const w = frame?.clientWidth || PAGE_W
       const h = frame?.clientHeight || PAGE_H
       const sx = w / PAGE_W
-      setMetrics({ sx, sy: h / PAGE_H, slide: w * (FRUIT_SLIDE / PAGE_W) })
+      const sy = h / PAGE_H
+      const ss = Math.min(sx, Math.max(0.62, (h - 72) / 380))
+      setMetrics({ sx, sy, ss, slide: w * (FRUIT_SLIDE / PAGE_W) })
     }
     apply()
     const observer = new ResizeObserver(apply)
-    observer.observe(root.closest('.frame') ?? root)
-    return () => observer.disconnect()
+    observer.observe(root)
+    const frame = root.closest('.frame')
+    if (frame) observer.observe(frame)
+    window.addEventListener('resize', apply)
+    window.addEventListener('orientationchange', apply)
+    window.visualViewport?.addEventListener('resize', apply)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', apply)
+      window.removeEventListener('orientationchange', apply)
+      window.visualViewport?.removeEventListener('resize', apply)
+    }
   }, [])
 
   useLayoutEffect(() => {
@@ -92,6 +104,7 @@ export function CharacterStage({
           metrics.sx,
           metrics.sy,
           metrics.slide,
+          metrics.ss,
         )
         return x >= slot.left && x <= slot.left + slot.size
       })
@@ -153,7 +166,7 @@ export function CharacterStage({
       node.removeEventListener('pointercancel', finish)
       node.removeEventListener('scrollend', snap)
     }
-  }, [fruitRef, metrics.slide, metrics.sx, metrics.sy, onPick, scrollable])
+  }, [fruitRef, metrics.slide, metrics.ss, metrics.sx, metrics.sy, onPick, scrollable])
 
   return (
     <div ref={rootRef} className="cast" style={{ pointerEvents: scrollable ? 'auto' : 'none' }}>
@@ -166,6 +179,7 @@ export function CharacterStage({
         sx={metrics.sx}
         sy={metrics.sy}
         slide={metrics.slide}
+        ss={metrics.ss}
       />
 
       <div ref={fruitRef as Ref<HTMLDivElement>} className="cast__scroll" onScroll={onScroll}>

@@ -443,6 +443,13 @@
   width: 100%;
 }
 
+@container (max-height: 740px) {
+  .tgame__stack {
+    gap: 8px;
+    padding: 12px 12px 10px;
+  }
+}
+
 @container (max-height: 640px) {
   .tgame__icon {
     width: 40px;
@@ -457,6 +464,39 @@
 
   .tgame__stats {
     padding: 8px 12px;
+  }
+}
+
+@container (max-height: 540px) {
+  .tgame__stack {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .tgame__icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .tgame__title {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .tgame__stats {
+    padding: 6px 10px;
+  }
+
+  .tgame__side {
+    width: 84px;
+    flex-basis: 84px;
+    gap: 6px;
+  }
+
+  .tgame__card {
+    padding: 8px 8px 10px;
+    gap: 6px;
   }
 }
 

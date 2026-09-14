@@ -23,13 +23,14 @@ export function stripSlot(
   sx = 1,
   sy = 1,
   slide = FRUIT_SLIDE,
+  ss = sx,
 ) {
   const character = characters[index]
   const hero = themes[character.id].hero
   const offset = index - progress
   const focus = smooth(1 - Math.abs(offset))
 
-  const size = lerp(SIDE * sx, hero.size * sx, focus)
+  const size = lerp(SIDE * ss, hero.size * ss, focus)
   const top = lerp(SIDE_TOP * sy, hero.top * sy, focus)
 
   const i0 = Math.max(0, Math.min(characters.length - 1, Math.floor(progress)))
@@ -57,6 +58,7 @@ export function CharacterStrip({
   sx = 1,
   sy = 1,
   slide = FRUIT_SLIDE,
+  ss = sx,
 }: {
   progress: number
   placed: string[]
@@ -66,13 +68,14 @@ export function CharacterStrip({
   sx?: number
   sy?: number
   slide?: number
+  ss?: number
 }) {
   const focused = Math.max(0, Math.min(characters.length - 1, Math.round(progress)))
 
   return (
     <>
       {characters.map((item, index) => {
-        const slot = stripSlot(index, progress, sx, sy, slide)
+        const slot = stripSlot(index, progress, sx, sy, slide, ss)
         const isFocus = index === focused
         return (
           <div

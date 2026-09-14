@@ -15,6 +15,7 @@
 .frame {
   --u: calc(100cqw / 393);
   --v: calc(100cqh / 852);
+  --s: min(var(--u), calc(var(--v) * 1.25));
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -159,7 +160,7 @@
 
 /* Horizontal fruit strip. Snap scroller is empty; fruits peek on a track. */
 .cast {
-  --slide: calc(250 * 100cqw / 393);
+  --slide: calc(250 * 100% / 393);
   --pad: calc((100% - var(--slide)) / 2);
   position: absolute;
   left: 0;
@@ -554,11 +555,11 @@
 
 .xpinfo {
   position: absolute;
-  left: calc(63 * var(--u));
+  left: 50%;
   top: calc(341 * 100cqh / 852);
-  width: calc(267 * var(--u));
-  height: calc(122 * var(--u));
-  translate: none;
+  width: calc(267 * var(--s));
+  height: calc(122 * var(--s));
+  translate: -50% 0;
   transform: none;
   z-index: 3;
   pointer-events: none;
@@ -571,13 +572,13 @@
   left: 0;
   top: 0;
   width: 100%;
-  height: calc(28 * var(--u));
+  height: calc(28 * var(--s));
   margin: 0;
   padding: 0;
-  font-size: calc(24 * var(--u));
+  font-size: calc(24 * var(--s));
   font-weight: 500;
-  line-height: calc(28 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
+  line-height: calc(28 * var(--s));
+  letter-spacing: calc(-2 * var(--s));
   text-align: center;
   text-transform: uppercase;
   color: var(--ink);
@@ -602,7 +603,7 @@
 .xpinfo__level-stroke {
   color: #fff;
   /* CSS stroke is centered; 12px → 6px visible outside under the fill layer. */
-  -webkit-text-stroke: calc(12 * var(--u)) #fff;
+  -webkit-text-stroke: calc(12 * var(--s)) #fff;
   paint-order: stroke fill;
   z-index: 0;
 }
@@ -616,12 +617,12 @@
 /* Figma 18:3824 Tab — 267×38.3 at y=46. Glass/stroke stop under the +100 star
    so the rounded white cap does not cut through the badge. */
 .xpinfo__pill {
-  --tuck: calc(24 * var(--u));
+  --tuck: calc(24 * var(--s));
   position: absolute;
   left: 0;
-  top: calc(46 * var(--u));
+  top: calc(46 * var(--s));
   width: 100%;
-  height: calc(38.31 * var(--u));
+  height: calc(38.31 * var(--s));
   border-radius: 72px;
   background: none;
   backdrop-filter: none;
@@ -658,7 +659,7 @@
   bottom: 0;
   right: var(--tuck);
   border-radius: inherit;
-  padding: calc(1.46 * var(--u));
+  padding: calc(1.46 * var(--s));
   background: linear-gradient(
     165deg,
     rgba(255, 255, 255, 1) 0%,
@@ -679,10 +680,10 @@
 /* Figma 18:3827 — 235×12 at 13,13 of the tab, fill #f3f3f5. */
 .xpinfo__track {
   position: absolute;
-  left: calc(13 * var(--u));
-  top: calc(13 * var(--u));
-  width: calc(235 * var(--u));
-  height: calc(12 * var(--u));
+  left: calc(13 * var(--s));
+  top: calc(13 * var(--s));
+  width: calc(235 * var(--s));
+  height: calc(12 * var(--s));
   border-radius: var(--r-progress);
   background: var(--track);
   overflow: visible;
@@ -695,7 +696,7 @@
   inset: 0;
   border-radius: var(--r-progress);
   background: var(--track-rest);
-  box-shadow: 0 0 0 calc(2.92 * var(--u)) var(--white);
+  box-shadow: 0 0 0 calc(2.92 * var(--s)) var(--white);
 }
 
 /* Figma 18:3828 mail — 126×12 green, white 2.92 outside stroke, on top of rest. */
@@ -706,19 +707,19 @@
   height: 100%;
   border-radius: var(--r-progress);
   background: var(--green);
-  box-shadow: 0 0 0 calc(2.92 * var(--u)) var(--white);
+  box-shadow: 0 0 0 calc(2.92 * var(--s)) var(--white);
   z-index: 1;
 }
 
 /* Stars: Tab coords left 0 / 124, top 2 (container 48). Hard 1.25px offset. */
 .xpinfo__star {
   position: absolute;
-  top: calc(2 * var(--u));
-  width: calc(37.28 * var(--u));
-  height: calc(34.45 * var(--u));
+  top: calc(2 * var(--s));
+  width: calc(37.28 * var(--s));
+  height: calc(34.45 * var(--s));
   pointer-events: none;
   z-index: 2;
-  filter: drop-shadow(calc(1.25 * var(--u)) calc(1.25 * var(--u)) 0 #000);
+  filter: drop-shadow(calc(1.25 * var(--s)) calc(1.25 * var(--s)) 0 #000);
 }
 
 .xpinfo__star--start {
@@ -728,8 +729,8 @@
 .xpinfo__star-head {
   position: absolute;
   top: 0;
-  width: calc(37.28 * var(--u));
-  height: calc(36.45 * var(--u));
+  width: calc(37.28 * var(--s));
+  height: calc(36.45 * var(--s));
   z-index: 2;
   pointer-events: none;
 }
@@ -741,10 +742,10 @@
 /* Figma 18:3830 — 65×60 at 212,35 of the container → 212, −11 of the tab. */
 .xpinfo__badge {
   position: absolute;
-  left: calc(212 * var(--u));
-  top: calc(-11 * var(--u));
-  width: calc(65 * var(--u));
-  height: calc(60 * var(--u));
+  left: calc(212 * var(--s));
+  top: calc(-11 * var(--s));
+  width: calc(65 * var(--s));
+  height: calc(60 * var(--s));
   pointer-events: none;
   z-index: 3;
 }
@@ -752,14 +753,14 @@
 /* Figma 18:3833 — 244×20 at 11.5,102, Inter 500 17, letter-spacing −1, LEFT. */
 .xpinfo__note {
   position: absolute;
-  left: calc(11.5 * var(--u));
-  top: calc(102 * var(--u));
-  width: calc(100% - 23 * var(--u));
+  left: calc(11.5 * var(--s));
+  top: calc(102 * var(--s));
+  width: calc(100% - 23 * var(--s));
   margin: 0;
-  font-size: calc(17 * var(--u));
+  font-size: calc(17 * var(--s));
   font-weight: 500;
-  line-height: calc(20 * var(--u));
-  letter-spacing: calc(-1 * var(--u));
+  line-height: calc(20 * var(--s));
+  letter-spacing: calc(-1 * var(--s));
   text-align: left;
   white-space: nowrap;
 }
@@ -1340,7 +1341,7 @@
   position: relative;
   left: auto;
   width: 100%;
-  height: 296px;
+  height: clamp(200px, 36cqh, 296px);
   border-radius: 24px;
   overflow: hidden;
   isolation: isolate;
@@ -1579,11 +1580,30 @@
 }
 
 
-@container frame (max-height: 700px) {
+@container frame (max-height: 740px) {
   .hpill {
-    top: 10px;
+    top: max(8px, var(--safe-t));
   }
 
+  .xpinfo {
+    top: calc(318 * var(--v));
+  }
+
+  .playbtn {
+    top: calc(472 * 100cqh / 852);
+  }
+
+  .media {
+    top: calc(536 * 100cqh / 852);
+    height: clamp(128px, calc(190 * 100cqh / 852), 210px);
+  }
+
+  .pager-dots {
+    top: calc(300 * var(--v));
+  }
+}
+
+@container frame (max-height: 700px) {
   .xpinfo {
     top: calc(300 * var(--v));
   }
@@ -1598,7 +1618,7 @@
   }
 
   .xpinfo__note {
-    font-size: calc(15 * var(--u));
+    font-size: calc(15 * var(--s));
   }
 
   .pager-dots {
@@ -1626,12 +1646,60 @@
     height: 48px;
     font-size: 15px;
   }
+
+  .featured {
+    height: clamp(180px, 32cqh, 240px);
+  }
+}
+
+@container frame (max-height: 568px) {
+  .xpinfo {
+    top: calc(268 * var(--v));
+  }
+
+  .pager--hub,
+  .cast {
+    height: calc(360 * var(--v));
+  }
+
+  .media {
+    height: clamp(110px, 28cqh, 150px);
+  }
+
+  .menu {
+    gap: 12px;
+    padding-top: 12px;
+  }
+}
+
+@container frame (min-height: 880px) {
+  .pager--hub,
+  .cast {
+    height: calc(450 * var(--v));
+  }
+
+  .xpinfo {
+    top: calc(352 * var(--v));
+  }
+
+  .pager-dots {
+    top: calc(328 * var(--v));
+  }
+
+  .playbtn {
+    top: calc(492 * 100cqh / 852);
+  }
+
+  .media {
+    top: calc(562 * 100cqh / 852);
+    height: clamp(180px, calc(230 * 100cqh / 852), 260px);
+  }
 }
 
 @container frame (max-width: 360px) {
   .xpinfo__level {
-    font-size: calc(20 * var(--u));
-    letter-spacing: calc(-1 * var(--u));
+    font-size: calc(20 * var(--s));
+    letter-spacing: calc(-1 * var(--s));
   }
 
   .playbtn,
@@ -1645,12 +1713,103 @@
     padding: 16px 12px;
     gap: 16px;
   }
+
+  .menu__tiles {
+    gap: 8px;
+  }
 }
 
 @container frame (max-width: 340px) {
   .menu__title {
     font-size: 18px;
     letter-spacing: -1px;
+  }
+
+  .menu__tile span {
+    font-size: 12px;
+  }
+
+  .hpill {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@container frame (max-width: 320px) {
+  .menu {
+    padding: 12px 10px;
+    gap: 12px;
+  }
+
+  .awards-sheet {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* Landscape phones: character + XP on the left, sheet on the right. */
+@container frame (max-height: 540px) and (min-width: 500px) {
+  .pager--hub,
+  .cast {
+    left: var(--safe-l);
+    width: calc(42% - var(--safe-l));
+    height: calc(100% - var(--nav-bar));
+  }
+
+  .pager-dots {
+    top: auto;
+    bottom: calc(var(--nav-bar) + 92px);
+  }
+
+  .xpinfo {
+    left: calc(var(--safe-l) + (42% - var(--safe-l)) / 2);
+    top: auto;
+    bottom: calc(var(--nav-bar) + 56px);
+    width: min(240px, 38cqw);
+    height: max(88px, calc(122 * var(--s)));
+  }
+
+  .playbtn,
+  .playbtn--dock,
+  .playbtn--dock.is-on {
+    left: calc(var(--safe-l) + (42% - var(--safe-l)) / 2);
+    top: auto;
+    bottom: calc(var(--nav-bar) + 10px);
+    opacity: 1;
+    pointer-events: auto;
+    translate: -50% 0;
+  }
+
+  .media,
+  .media.media--live,
+  .media.media--tetris {
+    display: none;
+  }
+
+  .frame__scroll--sheet {
+    left: 42%;
+    right: 0;
+    width: auto;
+    top: 0 !important;
+    bottom: var(--nav-bar) !important;
+    border-radius: 20px 0 0 0;
+  }
+
+  .frame__scroll--awards {
+    left: 42%;
+    right: 0;
+    top: 0 !important;
+    bottom: var(--nav-bar) !important;
+    border-radius: 20px 0 0 0;
+  }
+
+  .hub-curtain__pull {
+    display: none;
+  }
+
+  .navbar {
+    padding-left: var(--safe-l);
+    padding-right: var(--safe-r);
   }
 }
 

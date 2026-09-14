@@ -58,6 +58,7 @@ export function GameStage() {
   const [openId, setOpenId] = useState<string | null>(
     screen === 'awards' ? 'plus-50' : null,
   )
+  const [compactLand, setCompactLand] = useState(false)
 
   const mode = screen === 'awards' || screen === 'awards-grid' ? 'awards' : 'hub'
   const reveal =
@@ -75,6 +76,14 @@ export function GameStage() {
   useEffect(() => {
     curtainRef.current?.snapTo(hubSheet)
   }, [hubSheet])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(orientation: landscape) and (max-height: 540px)')
+    const sync = () => setCompactLand(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
 
   const openGame = (id?: string) => {
     if (id) {
@@ -110,7 +119,7 @@ export function GameStage() {
           onScroll={onScroll}
           enabled={playLive}
           docked
-          revealed={playRevealed}
+          revealed={playRevealed || compactLand}
         />
       )}
 

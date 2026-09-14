@@ -31,9 +31,9 @@ const FRAME_W = 393
 const FRAME_H = 852
 
 function scaleCap() {
-  if (window.matchMedia('(min-width: 1600px)').matches) return 1.5
-  if (window.matchMedia('(min-width: 1280px)').matches) return 1.35
-  if (window.matchMedia('(min-width: 960px)').matches) return 1.25
+  if (window.matchMedia('(min-width: 1600px) and (min-height: 800px)').matches) return 1.5
+  if (window.matchMedia('(min-width: 1280px) and (min-height: 700px)').matches) return 1.35
+  if (window.matchMedia('(min-width: 1100px) and (min-height: 700px)').matches) return 1.25
   return Number.POSITIVE_INFINITY
 }
 
@@ -58,9 +58,20 @@ function DeviceSlot({ children }: { children: ReactNode }) {
     const observer = new ResizeObserver((entries) => apply(entries[0]))
     observer.observe(slot)
     window.addEventListener('resize', onResize)
+    window.addEventListener('orientationchange', onResize)
+    window.visualViewport?.addEventListener('resize', onResize)
+    const queries = [
+      window.matchMedia('(min-width: 1100px)'),
+      window.matchMedia('(min-width: 1280px)'),
+      window.matchMedia('(min-width: 1600px)'),
+    ]
+    queries.forEach((mq) => mq.addEventListener('change', onResize))
     return () => {
       observer.disconnect()
       window.removeEventListener('resize', onResize)
+      window.removeEventListener('orientationchange', onResize)
+      window.visualViewport?.removeEventListener('resize', onResize)
+      queries.forEach((mq) => mq.removeEventListener('change', onResize))
     }
   }, [])
 
