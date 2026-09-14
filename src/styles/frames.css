@@ -19,6 +19,9 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  overflow-x: clip;
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
   background: var(--white);
   container-type: size;
   container-name: frame;
@@ -287,9 +290,10 @@
   background: var(--white);
   border-radius: 20px 20px 0 0;
   overflow: hidden;
+  overflow-x: hidden;
   pointer-events: auto;
-  /* pan-x so card rows can scroll; JS takes vertical sheet drags. */
-  touch-action: pan-x;
+  /* none: JS moves the sheet vertically; strips opt back into pan-x. */
+  touch-action: none;
 }
 
 .hub-curtain__grip {
@@ -333,7 +337,7 @@
 .frame__scroll--sheet.is-open {
   overflow-y: auto;
   overflow-x: hidden;
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
   scroll-padding-top: 52px;
 }
 
@@ -342,7 +346,8 @@
 }
 
 .frame__scroll--sheet .menu__xprow,
-.frame__scroll--sheet .promorow {
+.frame__scroll--sheet .promorow,
+.frame__scroll--sheet .svctabs {
   touch-action: pan-x;
 }
 
@@ -557,8 +562,13 @@
   position: absolute;
   left: 50%;
   top: calc(341 * 100cqh / 852);
-  width: calc(267 * var(--s));
-  height: calc(122 * var(--s));
+  width: min(calc(100% - 24px), calc(280 * var(--s)));
+  height: auto;
+  min-height: calc(122 * var(--s));
+  padding-top: calc(90 * var(--s));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   translate: -50% 0;
   transform: none;
   z-index: 3;
@@ -575,10 +585,10 @@
   height: calc(28 * var(--s));
   margin: 0;
   padding: 0;
-  font-size: calc(24 * var(--s));
+  font-size: clamp(18px, calc(24 * var(--s)), 24px);
   font-weight: 500;
   line-height: calc(28 * var(--s));
-  letter-spacing: calc(-2 * var(--s));
+  letter-spacing: calc(-1.5 * var(--s));
   text-align: center;
   text-transform: uppercase;
   color: var(--ink);
@@ -586,7 +596,7 @@
   border: none;
   border-radius: 0;
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
   filter: none;
   text-shadow: none;
   box-shadow: none;
@@ -752,17 +762,19 @@
 
 /* Figma 18:3833 — 244×20 at 11.5,102, Inter 500 17, letter-spacing −1, LEFT. */
 .xpinfo__note {
-  position: absolute;
-  left: calc(11.5 * var(--s));
-  top: calc(102 * var(--s));
-  width: calc(100% - 23 * var(--s));
-  margin: 0;
-  font-size: calc(17 * var(--s));
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+  margin: calc(10 * var(--s)) 0 0;
+  padding: 0 4px;
+  font-size: clamp(13px, calc(16 * var(--s)), 17px);
   font-weight: 500;
-  line-height: calc(20 * var(--s));
-  letter-spacing: calc(-1 * var(--s));
-  text-align: left;
-  white-space: nowrap;
+  line-height: 1.25;
+  letter-spacing: -0.4px;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* ---------- Green Button: 171×54, r49, inner white glow. Same as .cta ---------- */
@@ -921,20 +933,23 @@
 .menu__xprow {
   display: flex;
   align-items: stretch;
-  gap: 12px;
+  gap: 10px;
   min-height: 104px;
   height: auto;
   width: auto;
   min-width: 0;
+  max-width: none;
   align-self: stretch;
   margin: 0 -16px;
-  padding: 0 16px 4px;
+  padding: 0 16px 8px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
   touch-action: pan-x;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
 }
 
 .menu__xprow::-webkit-scrollbar {
@@ -945,17 +960,20 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 8px;
-  flex: 0 0 144px;
-  width: 144px;
+  gap: 6px;
+  flex: 0 0 calc((100% - 20px) / 3.2);
+  width: calc((100% - 20px) / 3.2);
   max-width: 144px;
+  min-width: 108px;
   min-height: 104px;
   height: auto;
   border-radius: var(--r-card-sm);
   background: var(--card);
-  padding: 12px;
+  padding: 10px 10px 12px;
   text-align: left;
   overflow: hidden;
+  touch-action: pan-x;
+  scroll-snap-align: start;
 }
 
 .xpcard:active,
@@ -972,21 +990,25 @@
 .xpcard__amount {
   width: 100%;
   min-width: 0;
-  font-size: 24px;
+  font-size: clamp(18px, 5.4cqw, 24px);
   font-weight: 500;
-  line-height: 28px;
-  letter-spacing: -2px;
+  line-height: 1.15;
+  letter-spacing: -1px;
   color: var(--ink);
 }
 
 .xpcard__label {
   width: 100%;
   min-width: 0;
-  font-size: 15px;
+  font-size: clamp(12px, 3.5cqw, 15px);
   font-weight: 500;
-  line-height: 16px;
-  letter-spacing: -1px;
+  line-height: 1.15;
+  letter-spacing: -0.4px;
   color: var(--ink);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .svctabs::-webkit-scrollbar {
@@ -1001,7 +1023,7 @@
   flex-wrap: nowrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   width: auto;
   min-width: 0;
   align-self: stretch;
@@ -1012,7 +1034,23 @@
   scrollbar-width: none;
   touch-action: pan-x;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   background: var(--white);
+}
+
+.svctabs__item {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: clamp(12px, 3.5cqw, 15px);
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.4px;
+  text-align: left;
+  color: var(--ink-muted);
+  white-space: nowrap;
 }
 
 .menu__anchor,
@@ -1026,20 +1064,6 @@
   gap: 20px;
   /* Last anchor can scroll under the sticky tabs. */
   min-height: calc(var(--frame-h) - 172px);
-}
-
-.svctabs__item {
-  flex: 0 0 auto;
-  padding: 0;
-  background: none;
-  border: none;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 20px;
-  letter-spacing: -0.8px;
-  text-align: left;
-  color: var(--ink-muted);
-  white-space: nowrap;
 }
 
 .svctabs__item--active {
@@ -1101,6 +1125,7 @@
   height: 85px;
   width: auto;
   min-width: 0;
+  max-width: 100%;
   align-self: stretch;
   margin: 0 -16px;
   padding: 0 16px;
@@ -1109,6 +1134,7 @@
   scrollbar-width: none;
   touch-action: pan-x;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   overscroll-behavior-x: contain;
 }
 
@@ -1118,7 +1144,8 @@
 
 .promorow img {
   display: block;
-  width: 469px;
+  width: auto;
+  max-width: none;
   height: 85px;
   border-radius: var(--r-card-sm);
 }
@@ -1582,13 +1609,19 @@
 
 @container frame (max-height: 860px) {
   .menu {
-    gap: 14px;
-    padding-top: 12px;
+    gap: 12px;
+    padding-top: 10px;
+    padding-bottom: calc(12px + var(--nav-bar));
   }
 
   .menu__xprow,
   .xpcard {
-    min-height: 96px;
+    min-height: 88px;
+  }
+
+  .promorow,
+  .promorow img {
+    height: 72px;
   }
 }
 
@@ -1672,34 +1705,35 @@
   }
 
   .menu {
-    gap: 10px;
-    padding-top: 8px;
+    gap: 8px;
+    padding-top: 6px;
     padding-left: 16px;
     padding-right: 16px;
+    padding-bottom: calc(12px + var(--nav-bar));
   }
 
   .menu__xprow,
   .xpcard {
-    min-height: 84px;
+    min-height: 80px;
   }
 
   .xpcard {
-    padding: 10px;
+    padding: 8px 10px 10px;
   }
 
   .xpcard__amount {
-    font-size: 22px;
-    line-height: 24px;
+    font-size: 20px;
+    line-height: 22px;
   }
 
   .svctabs {
-    padding-top: 4px;
-    padding-bottom: 8px;
+    padding-top: 2px;
+    padding-bottom: 6px;
   }
 
   .promorow,
   .promorow img {
-    height: 72px;
+    height: 68px;
   }
 
   .promorow img {
@@ -1848,7 +1882,8 @@
     top: auto;
     bottom: calc(var(--nav-bar) + 56px);
     width: min(240px, 38cqw);
-    height: max(88px, calc(122 * var(--s)));
+    height: auto;
+    min-height: max(88px, calc(110 * var(--s)));
   }
 
   .playbtn,

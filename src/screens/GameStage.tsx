@@ -24,16 +24,17 @@ const HUB_SHEET_EXPANDED = 56
 const HUB_SHEET_LOWERED = 724
 const NAV_DESIGN = 73
 
-function collapsedTopFor(frameH: number) {
+function collapsedTopFor(frameH: number, xpBottomPx?: number) {
   const nav = NAV_DESIGN
   const v = frameH / 852
   const s = Math.min(1, (frameH / 852) * 1.25)
   const xpTop =
     frameH <= 568 ? 220 : frameH <= 640 ? 240 : frameH <= 700 ? 255 : frameH <= 740 ? 270 : 341
-  const belowXp = xpTop * v + 122 * s + 8
-  const peek = frameH < 740 ? 276 : 324
+  const fallbackXp = xpTop * v + 122 * s
+  const belowXp = (xpBottomPx ?? fallbackXp) + 20
+  const peek = frameH < 740 ? 268 : 312
   const topPx = Math.max(belowXp, frameH - nav - peek)
-  return Math.round((Math.max(88, Math.min(topPx, frameH * 0.58)) / frameH) * 852)
+  return Math.round((Math.max(88, Math.min(topPx, frameH * 0.62)) / frameH) * 852)
 }
 
 /**
@@ -102,10 +103,18 @@ export function GameStage() {
   useEffect(() => {
     const frame = document.querySelector('.frame')
     if (!frame) return
-    const apply = () => setCollapsedTop(collapsedTopFor(frame.clientHeight || 852))
+    const apply = () => {
+      const xp = frame.querySelector('.xpinfo')
+      const frameBox = frame.getBoundingClientRect()
+      const xpBox = xp?.getBoundingClientRect()
+      const xpBottom = xpBox ? xpBox.bottom - frameBox.top : undefined
+      setCollapsedTop(collapsedTopFor(frame.clientHeight || 852, xpBottom))
+    }
     apply()
     const observer = new ResizeObserver(apply)
     observer.observe(frame)
+    const xp = frame.querySelector('.xpinfo')
+    if (xp) observer.observe(xp)
     return () => observer.disconnect()
   }, [])
 

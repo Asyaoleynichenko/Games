@@ -15,7 +15,7 @@ const AXIS_PX = 10
 const SNAP_PX = 36
 const SNAP_PX_FROM_FLOOR = 24
 const FLICK = 0.22
-const H_STRIPS = '.menu__xprow, .promorow, .svctabs, .xpcard'
+const H_STRIPS = '.menu__xprow, .promorow, .svctabs, .xpcard, .svctabs__item'
 
 export type HubCurtainStop = 'expanded' | 'collapsed' | 'lowered'
 

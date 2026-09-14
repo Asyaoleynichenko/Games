@@ -23,6 +23,9 @@
   gap: 0;
   padding: 0;
   background: var(--theme-base, #9747ff);
+  overflow: hidden;
+  overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 .device-slot {
