@@ -159,6 +159,8 @@
 
 /* Horizontal fruit strip. Snap scroller is empty; fruits peek on a track. */
 .cast {
+  --slide: calc(250 * 100cqw / 393);
+  --pad: calc((100% - var(--slide)) / 2);
   position: absolute;
   left: 0;
   top: 0;
@@ -183,9 +185,9 @@
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
-  scroll-snap-type: none;
-  scroll-padding-inline: calc(76 * 100cqw / 393);
-  padding-inline: calc(76 * 100cqw / 393);
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--pad);
+  padding-inline: var(--pad);
   scrollbar-width: none;
   overscroll-behavior-x: contain;
   touch-action: pan-x;
@@ -203,8 +205,8 @@
 }
 
 .cast__snap {
-  flex: 0 0 calc(241 * 100cqw / 393);
-  width: calc(241 * 100cqw / 393);
+  flex: 0 0 var(--slide);
+  width: var(--slide);
   height: 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;
@@ -371,6 +373,7 @@
 .frame__canvas {
   position: relative;
   width: 100%;
+  min-width: 0;
 }
 
 /* ---------- Backgrounds ---------- */
@@ -882,6 +885,7 @@
 .menu {
   position: relative;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -901,6 +905,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .menu__title {
@@ -918,10 +923,17 @@
   gap: 12px;
   min-height: 104px;
   height: auto;
+  width: auto;
+  min-width: 0;
+  align-self: stretch;
   margin: 0 -16px;
-  padding: 0 16px;
+  padding: 0 16px 4px;
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .menu__xprow::-webkit-scrollbar {
@@ -935,6 +947,7 @@
   gap: 8px;
   flex: 0 0 144px;
   width: 144px;
+  max-width: 144px;
   min-height: 104px;
   height: auto;
   border-radius: var(--r-card-sm);
@@ -975,6 +988,10 @@
   color: var(--ink);
 }
 
+.svctabs::-webkit-scrollbar {
+  display: none;
+}
+
 .svctabs {
   position: sticky;
   top: 0;
@@ -984,9 +1001,16 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  width: 100%;
+  width: auto;
+  min-width: 0;
+  align-self: stretch;
   margin: 0 -16px;
   padding: 8px 16px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
   background: var(--white);
 }
 
@@ -1004,7 +1028,7 @@
 }
 
 .svctabs__item {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   padding: 0;
   background: none;
   border: none;
@@ -1074,10 +1098,17 @@
 
 .promorow {
   height: 85px;
+  width: auto;
+  min-width: 0;
+  align-self: stretch;
   margin: 0 -16px;
   padding: 0 16px;
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .promorow::-webkit-scrollbar {

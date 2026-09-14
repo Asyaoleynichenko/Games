@@ -44,7 +44,6 @@ export function GameStage() {
     hubSheet,
     setHubPhase,
     setHubSheet,
-    openTetris,
   } = useHub()
 
   const { ref, fruitRef, progress, onScroll, onFruitScroll, jumpTo } = useThemePager()
@@ -77,9 +76,12 @@ export function GameStage() {
     curtainRef.current?.snapTo(hubSheet)
   }, [hubSheet])
 
-  const pickNeighbor = (id: string) => {
-    const index = characters.findIndex((item) => item.id === id)
-    if (index >= 0) jumpTo(index)
+  const openGame = (id?: string) => {
+    if (id) {
+      const index = characters.findIndex((item) => item.id === id)
+      if (index >= 0 && index !== characterIndex) jumpTo(index)
+    }
+    openSheet('game-intro')
   }
 
   const canvasHeight = Math.max(540, (openId ? 480 : 64) + 520)
@@ -98,7 +100,7 @@ export function GameStage() {
         mood={playLive && mood === 'idle' ? 'playing' : mood}
         scrollable
         onScroll={onFruitScroll}
-        onPick={pickNeighbor}
+        onPick={openGame}
       />
 
       {mode === 'hub' && (
@@ -135,9 +137,8 @@ export function GameStage() {
               }}
               onAction={(target) => {
                 if (target === 'quest') goto('quest')
-                else if (target === 'game') {
-                  openTetris('tutorial')
-                } else openSheet('streak')
+                else if (target === 'game') openSheet('game-intro')
+                else openSheet('streak')
               }}
             />
           </div>

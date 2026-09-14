@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { StickerImage } from '../components/Character'
 import { BottomSheet, Cta } from '../components/Ui'
 import { characters } from '../data/characters'
+import { introFor } from '../data/games'
 import { basketQuest } from '../data/quests'
 import { stickerById } from '../data/stickers'
 import { useHub } from '../state/HubState'
@@ -80,6 +81,37 @@ export function ClaimErrorSheet() {
         <Cta block variant="white" onClick={closeSheet}>
           Закрыть
         </Cta>
+      </div>
+    </BottomSheet>
+  )
+}
+
+/** Tap a character or «Играть» — copy first, then the game. */
+export function GameIntroSheet() {
+  const { characterIndex, closeSheet, openTetris } = useHub()
+  const character = characters[characterIndex]
+  const intro = introFor(character.id)
+
+  return (
+    <BottomSheet onClose={closeSheet}>
+      <div className="gamesheet">
+        <img className="gamesheet__art" src={character.art} alt="" />
+        <h2 className="gamesheet__title">{intro.title}</h2>
+        <p className="gamesheet__lead">{intro.lead}</p>
+        <p className="gamesheet__how">{intro.how}</p>
+        <div className="gamesheet__actions">
+          <Cta variant="white" onClick={closeSheet}>
+            Позже
+          </Cta>
+          <Cta
+            onClick={() => {
+              closeSheet()
+              openTetris('playing')
+            }}
+          >
+            Играть
+          </Cta>
+        </div>
       </div>
     </BottomSheet>
   )

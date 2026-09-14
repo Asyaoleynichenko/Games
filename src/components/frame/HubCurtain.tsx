@@ -15,7 +15,7 @@ const AXIS_PX = 10
 const SNAP_PX = 36
 const SNAP_PX_FROM_FLOOR = 24
 const FLICK = 0.22
-const H_STRIPS = '.menu__xprow, .promorow, .svctabs'
+const H_STRIPS = '.menu__xprow, .promorow, .svctabs, .xpcard'
 
 export type HubCurtainStop = 'expanded' | 'collapsed' | 'lowered'
 
@@ -181,6 +181,10 @@ export const HubCurtain = forwardRef<
 
     const onDown = (event: PointerEvent) => {
       if (event.button !== 0) return
+      if ((event.target as HTMLElement | null)?.closest(H_STRIPS)) {
+        drag.current = null
+        return
+      }
       drag.current = {
         pointer: event.pointerId,
         x: event.clientX,

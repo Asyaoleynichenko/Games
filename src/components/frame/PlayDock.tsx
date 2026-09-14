@@ -26,8 +26,8 @@ export function PlayDock({
   docked?: boolean
   revealed?: boolean
 }) {
-  const { openTetris } = useHub()
-  const play = () => openTetris('playing')
+  const { openSheet } = useHub()
+  const play = () => openSheet('game-intro')
 
   return (
     <>

@@ -12,11 +12,11 @@ import { useHub } from '../../state/HubState'
 
 export const PAGE_W = 393
 export const PAGE_H = 852
-/** Fruit slide + side padding so neighbours stay in the 393 viewport. */
-export const FRUIT_PAD = 76
-export const FRUIT_SLIDE = PAGE_W - FRUIT_PAD * 2
+/** Distance between character centres — neighbours peek, they do not cover the hero. */
+export const FRUIT_SLIDE = 250
+export const FRUIT_PAD = (PAGE_W - FRUIT_SLIDE) / 2
 
-/** One fruit step in the live frame — 241/393 of the current width. */
+/** One fruit step in the live frame — FRUIT_SLIDE/393 of the current width. */
 export function fruitStep(el: HTMLElement | null | undefined) {
   return (el?.clientWidth || PAGE_W) * (FRUIT_SLIDE / PAGE_W)
 }

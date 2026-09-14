@@ -62,6 +62,7 @@
   --safe-r: env(safe-area-inset-right, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left, 0px);
+  --fruit-slide: 250;
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

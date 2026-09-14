@@ -4,7 +4,7 @@ import type { CharacterMood } from '../../state/HubState'
 import { themes } from './Chrome'
 import { FRUIT_SLIDE } from './Pager'
 
-const SIDE = 282
+const SIDE = 170
 const SIDE_TOP = 45
 
 function lerp(a: number, b: number, t: number) {

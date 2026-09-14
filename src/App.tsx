@@ -7,7 +7,13 @@ import { MenuFrame } from './screens/MenuFrame'
 import { NewStickerScreen } from './screens/NewStickerScreen'
 import { PlayScreen } from './screens/PlayScreen'
 import { QuestScreen } from './screens/QuestScreen'
-import { CatalogSheet, ClaimErrorSheet, StickerSheet, StreakSheet } from './screens/Sheets'
+import {
+  CatalogSheet,
+  ClaimErrorSheet,
+  GameIntroSheet,
+  StickerSheet,
+  StreakSheet,
+} from './screens/Sheets'
 import { TetrisScreen } from './screens/TetrisScreen'
 import { DemoRail } from './DemoRail'
 import { HubProvider, useHub, type ScreenId } from './state/HubState'
@@ -83,6 +89,7 @@ function Device() {
             {sheet === 'streak' && <StreakSheet key="streak" />}
             {sheet === 'claim-error' && <ClaimErrorSheet key="claim-error" />}
             {sheet === 'catalog' && <CatalogSheet key="catalog" />}
+            {sheet === 'game-intro' && <GameIntroSheet key="game-intro" />}
             {sheet && typeof sheet === 'object' && (
               <StickerSheet key={sheet.sticker} stickerId={sheet.sticker} />
             )}

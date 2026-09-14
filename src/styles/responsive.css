@@ -21,7 +21,7 @@
   justify-content: center;
   gap: 0;
   padding: 0;
-  background: radial-gradient(60% 50% at 50% 0%, #2b2438 0%, #15121c 72%);
+  background: #000;
 }
 
 .device-slot {
@@ -50,8 +50,8 @@
 
 .device {
   position: relative;
-  width: calc(var(--frame-w) * var(--fit));
-  height: calc(var(--frame-h) * var(--fit));
+  width: 100%;
+  height: 100%;
   border-radius: 0;
   overflow: hidden;
   background: #000;
@@ -61,12 +61,10 @@
 
 .device__artboard {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--frame-w);
-  height: var(--frame-h);
-  transform: scale(var(--fit));
-  transform-origin: 0 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
 }
 
 .demo-rail {
@@ -86,6 +84,7 @@
     padding: 16px;
     padding-top: max(16px, var(--safe-t));
     padding-bottom: max(16px, var(--safe-b));
+    background: radial-gradient(60% 50% at 50% 0%, #2b2438 0%, #15121c 72%);
   }
 
   .device-slot {
@@ -112,6 +111,7 @@
     padding: 24px 20px;
     padding-left: max(20px, var(--safe-l));
     padding-right: max(20px, var(--safe-r));
+    background: radial-gradient(60% 50% at 50% 0%, #2b2438 0%, #15121c 72%);
   }
 
   .device-slot {
@@ -187,10 +187,17 @@
   }
 
   .device {
-    width: calc(var(--frame-w) * var(--fit));
-    height: calc(var(--frame-h) * var(--fit));
+    width: 100%;
+    height: 100%;
     border-radius: 0;
     box-shadow: none;
+  }
+
+  .device__artboard {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
   }
 
   .demo-rail {
@@ -203,6 +210,7 @@
 @media (orientation: landscape) and (min-height: 600px) and (max-width: 959.98px) {
   .stage {
     padding: 12px;
+    background: radial-gradient(60% 50% at 50% 0%, #2b2438 0%, #15121c 72%);
   }
 
   .device {

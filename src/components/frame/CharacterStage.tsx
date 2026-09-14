@@ -5,9 +5,8 @@ import { CharacterStrip, stripSlot } from './Hero'
 import { FRUIT_SLIDE, PAGE_H, PAGE_W, fruitStep } from './Pager'
 
 /**
- * Three characters on one horizontal track. Scroll is the source of motion —
- * they slide as a line, the centre one larger, the sides shrinking as they
- * leave the focus slot. Mouse drag, wheel and touch all move the same strip.
+ * Three characters on one horizontal track. Touch uses native pan + snap;
+ * mouse can still drag the same scroller.
  */
 export function CharacterStage({
   fruitRef,
@@ -33,6 +32,7 @@ export function CharacterStage({
   onPick: (id: string) => void
 }) {
   const drag = useRef<{ id: number; x: number; scroll: number } | null>(null)
+  const tap = useRef({ x: 0, scroll: 0 })
   const progressRef = useRef(progress)
   const rootRef = useRef<HTMLDivElement>(null)
   const [metrics, setMetrics] = useState({ sx: 1, sy: 1, slide: FRUIT_SLIDE })
@@ -45,7 +45,8 @@ export function CharacterStage({
       const frame = root.closest('.frame') as HTMLElement | null
       const w = frame?.clientWidth || PAGE_W
       const h = frame?.clientHeight || PAGE_H
-      setMetrics({ sx: w / PAGE_W, sy: h / PAGE_H, slide: w * (FRUIT_SLIDE / PAGE_W) })
+      const sx = w / PAGE_W
+      setMetrics({ sx, sy: h / PAGE_H, slide: w * (FRUIT_SLIDE / PAGE_W) })
     }
     apply()
     const observer = new ResizeObserver(apply)
@@ -81,6 +82,22 @@ export function CharacterStage({
       node.scrollTo({ left: index * step, behavior: 'smooth' })
     }
 
+    const pickAt = (clientX: number) => {
+      const rect = node.getBoundingClientRect()
+      const x = clientX - rect.left
+      const hit = characters.findIndex((_, index) => {
+        const slot = stripSlot(
+          index,
+          progressRef.current,
+          metrics.sx,
+          metrics.sy,
+          metrics.slide,
+        )
+        return x >= slot.left && x <= slot.left + slot.size
+      })
+      if (hit >= 0) onPick(characters[hit].id)
+    }
+
     const onWheel = (event: WheelEvent) => {
       const delta =
         Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
@@ -91,6 +108,8 @@ export function CharacterStage({
 
     const onDown = (event: PointerEvent) => {
       if (event.button !== 0) return
+      tap.current = { x: event.clientX, scroll: node.scrollLeft }
+      if (event.pointerType !== 'mouse') return
       drag.current = { id: event.pointerId, x: event.clientX, scroll: node.scrollLeft }
       node.classList.add('is-dragging')
       node.setPointerCapture(event.pointerId)
@@ -103,33 +122,21 @@ export function CharacterStage({
     }
 
     const finish = (event: PointerEvent) => {
+      const moved = Math.abs(event.clientX - tap.current.x)
+      const scrolled = Math.abs(node.scrollLeft - tap.current.scroll)
       const state = drag.current
-      if (!state || state.id !== event.pointerId) return
-      const moved = Math.abs(event.clientX - state.x)
-      drag.current = null
-      node.classList.remove('is-dragging')
-      if (node.hasPointerCapture(event.pointerId)) {
-        node.releasePointerCapture(event.pointerId)
+      if (state && state.id === event.pointerId) {
+        drag.current = null
+        node.classList.remove('is-dragging')
+        if (node.hasPointerCapture(event.pointerId)) {
+          node.releasePointerCapture(event.pointerId)
+        }
+        if (moved > 8) {
+          snap()
+          return
+        }
       }
-
-      if (moved <= 8) {
-        const rect = node.getBoundingClientRect()
-        const x = event.clientX - rect.left
-        const hit = characters.findIndex((_, index) => {
-          const slot = stripSlot(
-            index,
-            progressRef.current,
-            metrics.sx,
-            metrics.sy,
-            metrics.slide,
-          )
-          return x >= slot.left && x <= slot.left + slot.size
-        })
-        if (hit >= 0) onPick(characters[hit].id)
-        return
-      }
-
-      snap()
+      if (moved <= 8 && scrolled <= 8) pickAt(event.clientX)
     }
 
     node.addEventListener('wheel', onWheel, { passive: false })

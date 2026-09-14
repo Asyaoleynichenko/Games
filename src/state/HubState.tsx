@@ -51,6 +51,7 @@ export type SheetId =
   | 'streak'
   | 'claim-error'
   | 'catalog'
+  | 'game-intro'
   | { sticker: string }
   | null
 
